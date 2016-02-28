@@ -1,0 +1,3 @@
+
+Die Mapper werden wohl nicht gebraucht weil \Zend\Stdlib\Hydrator verwendet wird
+...bzw. \Zend\Stdlib\ArrayObject
