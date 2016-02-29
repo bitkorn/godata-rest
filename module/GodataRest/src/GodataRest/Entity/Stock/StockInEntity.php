@@ -13,14 +13,14 @@ namespace GodataRest\Entity\Stock;
  *
  * @author allapow
  */
-class StockInEntity extends \Zend\Stdlib\ArrayObject
+class StockInEntity extends \GodataRest\Entity\AbstractEntity
 {
 
     /**
      *
      * @var array Array with Key=property; value=db column
      */
-    private $mapping = [
+    public $mapping = [
         'id' => 'id',
 //        'articleNo' => 'article_no', // no db equivalent
         'articleId' => 'article_id',
@@ -31,39 +31,19 @@ class StockInEntity extends \Zend\Stdlib\ArrayObject
         'unit' => 'unit',
         'entryTime' => 'entry_time'
     ];
-    private $arrayCopy = [];
-
-    /**
-     * Flip if data comes from DB
-     */
-    public function flipMapping()
-    {
-        $this->mapping = array_flip($this->mapping);
-    }
-
-    public function exchangeArray($data)
-    {
-        foreach ($data as $key => $value) {
-            if (isset($this->mapping[$key])) {
-                $this->arrayCopy[$this->mapping[$key]] = $value;
-            }
-        }
-    }
+    
+    public $escapekeys = [
+        'storePlace',
+        'charge'
+    ];
 
     public function save(\GodataRest\Table\Stock\StockInTable $stockInTable)
     {
-        
-        return $stockInTable->createStockIn($this->arrayCopy);
+        return $stockInTable->createStockIn($this->storage);
     }
 
     public function update(\GodataRest\Table\Stock\StockInTable $stockInTable)
     {
-        return $stockInTable->updateStockIn($this->arrayCopy['id'], $this->arrayCopy);
+        return $stockInTable->updateStockIn($this->storage['id'], $this->storage);
     }
-
-    public function getArrayCopy()
-    {
-        return $this->arrayCopy;
-    }
-
 }

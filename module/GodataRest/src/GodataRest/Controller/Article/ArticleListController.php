@@ -41,6 +41,8 @@ class ArticleListController extends \GodataRest\Controller\AbstractGodataControl
                 $articleListEntity->flipMapping();
                 $articleListEntity->flipMappingArticle();
                 $articleListEntity->exchangeArray($articleListEntryData);
+//                $this->getLogger()->debug('storage: ' . print_r($articleListEntity->getArrayCopy(), true));
+                $articleListEntity->escapeForOutput();
                 $articleList[] = $articleListEntity->getArrayCopy();
             }
 //            $articleList = $articleListData;

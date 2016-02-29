@@ -21,10 +21,16 @@ class ArticleListTablex extends \GodataRest\Tablex\AbstractGodataTablex
                         LEFT JOIN article a ON a.id = al.article_id
                         where article_id_parent=?';
 
+    /**
+     * @var array
+     */
+    private $articleDbColums = ['article_no', 'article_type', 'article_group', 'article_class', 'desc_short', 'desc_long', 'desc_tec',
+        'date_create', 'date_edit', 'user_create', 'user_edit', 'unit', 'status',
+        'default_store_id', 'default_store_place'];
+
     public function buildQuery()
     {
-        $articleColums = \GodataRest\Entity\Article\ArticleListEntryEntity::$articleDbColums;
-        $goodArticleColumns = 'a.' . implode(',a.', $articleColums);
+        $goodArticleColumns = 'a.' . implode(',a.', $this->articleDbColums);
         
         $goodQuery = str_replace('ARTICLE_COLUMS', $goodArticleColumns, $this->query);
 //        $this->logger->debug('$goodQuery: ' . $goodQuery);

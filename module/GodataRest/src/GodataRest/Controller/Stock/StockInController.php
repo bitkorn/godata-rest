@@ -38,6 +38,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
             $stockInEntity = new \GodataRest\Entity\Stock\StockInEntity();
             $stockInEntity->flipMapping();
             $stockInEntity->exchangeArray($stockInData);
+            $stockInEntity->escapeForOutput();
             $stockIn = $stockInEntity->getArrayCopy();
         } else {
             $stockIn['messages'][] = 'no stock available';
@@ -85,6 +86,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
                 $stockEntity = new \GodataRest\Entity\Stock\StockInEntity();
                 $stockEntity->flipMapping();
                 $stockEntity->exchangeArray($stockInData);
+                $stockEntity->escapeForOutput();
                 $stockIns['data'][] = $stockEntity->getArrayCopy();
             }
         } else {
@@ -148,6 +150,8 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
     public function update($id, $data)
     {
         $result = 0;
+        $jsonArr = new JsonModel();
+        $jsonArr->setVariable('id', $id);
         if ($data && is_array($data)) {
             
         }

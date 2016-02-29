@@ -38,6 +38,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->flipMapping();
             $articleEntity->exchangeArray($articleData);
+            $articleEntity->escapeForOutput();
             $article = $articleEntity->getArrayCopy();
 //            $this->getLogger()->debug('$articleEntity->id: ' . $articleEntity->id);
             $article['articleListCount'] = $this->articleListTable->articleListExist($articleEntity->id);
@@ -73,6 +74,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
                 $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
                 $articleEntity->flipMapping();
                 $articleEntity->exchangeArray($articleData);
+                $articleEntity->escapeForOutput();
                 $articles['data'][] = $articleEntity->getArrayCopy();
             }
         } else {

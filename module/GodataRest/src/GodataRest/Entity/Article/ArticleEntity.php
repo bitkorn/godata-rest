@@ -13,17 +13,8 @@ namespace GodataRest\Entity\Article;
  *
  * @author allapow
  */
-class ArticleEntity extends \Zend\Stdlib\ArrayObject
+class ArticleEntity extends \GodataRest\Entity\AbstractEntity
 {
-
-    public $id;
-    public $articleNo;
-    public $articleType;
-    public $articleGroup;
-    public $articleClass;
-    public $descShort;
-    public $descLong;
-    public $descTec;
 
     /**
      *
@@ -47,23 +38,13 @@ class ArticleEntity extends \Zend\Stdlib\ArrayObject
         'default_store_id' => 'defaultStoreId',
         'default_store_place' => 'defaultStorePlace'
     ];
-
-    /**
-     * Flip if data comes from DB
-     */
-    public function flipMapping()
-    {
-        $this->mapping = array_flip($this->mapping);
-    }
-
-    public function exchangeArray($data)
-    {
-        foreach ($data as $key => $value) {
-            if (isset($this->mapping[$key])) {
-                $this->storage[$this->mapping[$key]] = $this->$key = $value;
-            }
-        }
-    }
+    
+    public $escapekeys = [
+        'descShort',
+        'descLong',
+        'descTec',
+        'default_store_place'
+    ];
 
     public function save(\GodataRest\Table\Article\ArticleTable $articleTable)
     {
@@ -73,11 +54,6 @@ class ArticleEntity extends \Zend\Stdlib\ArrayObject
     public function update(\GodataRest\Table\Article\ArticleTable $articleTable)
     {
         return $articleTable->updateArticle($this->storage['id'], $this->storage);
-    }
-
-    public function getArrayCopy()
-    {
-        return $this->storage;
     }
 
 }
