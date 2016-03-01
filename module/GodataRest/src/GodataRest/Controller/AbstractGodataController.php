@@ -21,6 +21,12 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
      * @var \Zend\Log\Logger
      */
     protected $logger;
+    
+    /**
+     * The response array to use recommended. Predefined with keys 'messages' and 'data'.
+     * @var array
+     */
+    protected $responseArr = ['messages' => [], 'data' => []];
 
     /**
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
@@ -55,7 +61,7 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
      */
     public function options()
     {
-        $this->getLogger()->debug('options :)');
+//        $this->getLogger()->debug('options :)');
 //        header('Access-Control-Allow-Methods: GET,PUT,POST,DELETE');
 //        parent::options();
 //        $this->response->setStatusCode(200);
@@ -76,15 +82,15 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
 
         // Access-Control headers are received during OPTIONS requests
         if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            $this->getLogger()->debug('REQUEST_METHOD == OPTIONS');
+//            $this->getLogger()->debug('REQUEST_METHOD == OPTIONS');
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
                 header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-                $this->getLogger()->debug('HTTP_ACCESS_CONTROL_REQUEST_METHOD');
+//                $this->getLogger()->debug('HTTP_ACCESS_CONTROL_REQUEST_METHOD');
             }
 
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
                 header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-                $this->getLogger()->debug('HTTP_ACCESS_CONTROL_REQUEST_HEADERS');
+//                $this->getLogger()->debug('HTTP_ACCESS_CONTROL_REQUEST_HEADERS');
             }
 
             exit(0);

@@ -46,7 +46,7 @@ class ArticleListTable extends AbstractTableGateway implements AdapterAwareInter
      */
     public function articleListExist($articleId)
     {
-        if (!$articleId) {
+        if (empty($articleId)) {
             return 0;
         }
         $select = $this->sql->select();

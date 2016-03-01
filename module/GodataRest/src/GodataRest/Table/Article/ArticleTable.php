@@ -41,7 +41,7 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
      */
     public function getArticle($id)
     {
-        if(!$id) {
+        if(is_nan($id) || $id < 0) { // can be 0
             return [];
         }
         $select = $this->sql->select();
@@ -127,10 +127,10 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
     {
         $insert = $this->sql->insert();
         $insert->values($data);
-        $result = $this->insertWith($insert);
-        if ($result >= 1) {
-//            $this->sql->select()->columns([]);
-            return $this->lastInsertValue;
+        $stmt = $this->sql->prepareStatementForSqlObject($insert);
+        $result = $stmt->execute(); // Zend\Db\Adapter\Driver\Pdo\Result
+        if ($result->valid() && ($result instanceof \Zend\Db\Adapter\Driver\ResultInterface)) {
+            return $result->getGeneratedValue();
         }
         return 0;
     }

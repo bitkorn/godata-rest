@@ -32,21 +32,22 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
     public function get($id)
     {
 //        $this->getLogger()->debug('Article GET ID: ' . $id);
-        $articleData = $this->articleTable->getArticle(filter_var($id, FILTER_VALIDATE_INT, ['min_range' => 1]));
+        $articleData = $this->articleTable->getArticle(filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]));
 //        $this->getLogger()->debug(print_r($articleData, true));
         if (!empty($articleData)) {
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->flipMapping();
             $articleEntity->exchangeArray($articleData);
             $articleEntity->escapeForOutput();
-            $article = $articleEntity->getArrayCopy();
-//            $this->getLogger()->debug('$articleEntity->id: ' . $articleEntity->id);
-            $article['articleListCount'] = $this->articleListTable->articleListExist($articleEntity->id);
+            $this->responseArr['data'] = $articleEntity->getArrayCopy();
+//            $this->getLogger()->debug('article ID: ' . $articleEntity->id);
+            $this->responseArr['articleListCount'] = $this->articleListTable->articleListExist($articleEntity->id);
         } else {
-            $article['messages'][] = 'no article available';
+            $this->responseArr['messages'][] = 'no article available';
         }
+//        $this->getLogger()->debug('$responseArr: ' . print_r($this->responseArr, true));
         return new JsonModel(
-                $article
+                $this->responseArr
         );
     }
 
@@ -56,34 +57,35 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function getList()
     {
-        $articles['size'] = (int) $this->params()->fromQuery('size', 0);
-        $articles['page'] = (int) $this->params()->fromQuery('page', 1);
+        $this->responseArr['size'] = (int) $this->params()->fromQuery('size', 0);
+        $this->responseArr['page'] = (int) $this->params()->fromQuery('page', 1);
         $digitsValidator = new \Zend\Validator\Digits();
         $articleNo = trim($this->params()->fromQuery('articleNo', '')); // must be string ...perhaps somebody search for 007
-        if(!$digitsValidator->isValid($articleNo)) {
+        if (!empty($articleNo) && !$digitsValidator->isValid($articleNo)) {
 //            $this->getLogger()->debug('no valid');
-            $articles['messages'][] = 'articleNo allow only Digits';
+            $this->responseArr['messages'][] = 'articleNo allow only Digits';
         }
         $desc = trim($this->params()->fromQuery('desc', ''));
         $articleType = (int) $this->params()->fromQuery('articleType', '');
 //        $this->getLogger()->debug('$articleNo: ' . $articleNo);
-        $articeListData = $this->articleTable->getArticleList($articles['size'], $articles['page'], $articleNo, $desc, $articleType);
+        $articeListData = $this->articleTable->getArticleList(
+                $this->responseArr['size'], $this->responseArr['page'], $articleNo, $desc, $articleType
+        );
         if (!empty($articeListData['data'])) {
-            $articles['count'] = $articeListData['count'];
+            $this->responseArr['count'] = $articeListData['count'];
             foreach ($articeListData['data'] as $articleData) {
                 $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
                 $articleEntity->flipMapping();
                 $articleEntity->exchangeArray($articleData);
                 $articleEntity->escapeForOutput();
-                $articles['data'][] = $articleEntity->getArrayCopy();
+//                $this->getLogger()->debug('storage: ' . print_r($articleEntity->getArrayCopy(), true));
+                $this->responseArr['data'][] = $articleEntity->getArrayCopy();
             }
         } else {
-            $articles['count'] = 0;
-            $articles['data'] = [];
+            $this->responseArr['count'] = 0;
+            $this->responseArr['data'] = [];
         }
-        return new JsonModel(
-                $articles
-        );
+        return new JsonModel($this->responseArr);
     }
 
     /**
@@ -96,17 +98,12 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function create($data)
     {
-//        $this->getLogger()->debug('create: ' . print_r($data, true));
-        $lastInsertId = 0;
         if ($data && is_array($data)) {
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->exchangeArray($data);
-            $lastInsertId = $articleEntity->save($this->articleTable);
-//            $this->getLogger()->debug('lastInsertId: ' . $lastInsertId);
+            $this->responseArr['id'] = $articleEntity->save($this->articleTable);
         }
-        return new JsonModel(
-                ['id' => $lastInsertId]
-        );
+        return new JsonModel($this->responseArr);
     }
 
     /**
@@ -117,11 +114,9 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function delete($id)
     {
-//        $this->getLogger()->debug('delete: ' . $id);
-        $result = $this->articleTable->deleteArticle($id);
-        return new JsonModel(
-                ['id' => $id, 'result' => $result]
-        );
+        $responseArr = ['id' => $id];
+        $responseArr['result'] = $this->articleTable->deleteArticle($id);
+        return new JsonModel($responseArr);
     }
 
     /**
@@ -133,24 +128,21 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function update($id, $data)
     {
-//        $this->getLogger()->debug('update: ' . $id . '; data: ' . print_r($data, true));
-        $result = 0;
+        $responseArr = ['id' => $id];
         if ($data && is_array($data)) {
 //            $this->getLogger()->debug('drin');
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->exchangeArray($data);
-            $result = $articleEntity->update($this->articleTable);
+            $responseArr['result'] = $articleEntity->update($this->articleTable);
         }
-        return new JsonModel(
-                ['id' => $id, 'result' => $result]
-        );
+        return new JsonModel($responseArr);
     }
 
     public function setArticleTable(\GodataRest\Table\Article\ArticleTable $articleTable)
     {
         $this->articleTable = $articleTable;
     }
-    
+
     public function setArticleListTable(\GodataRest\Table\Article\ArticleListTable $articleListTable)
     {
         $this->articleListTable = $articleListTable;

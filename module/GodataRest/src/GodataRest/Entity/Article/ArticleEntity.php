@@ -29,25 +29,26 @@ class ArticleEntity extends \GodataRest\Entity\AbstractEntity
         'descShort' => 'desc_short',
         'descLong' => 'desc_long',
         'descTec' => 'desc_tec',
-        'date_create' => 'dateCreate',
-        'date_edit' => 'dateEdit',
-        'user_create' => 'userCreate',
-        'user_edit' => 'userEdit',
+        'dateCreate' => 'date_create',
+        'dateEdit' => 'date_edit',
+        'userCreate' => 'user_create',
+        'userEdit' => 'user_edit',
         'unit' => 'unit',
         'status' => 'status',
-        'default_store_id' => 'defaultStoreId',
-        'default_store_place' => 'defaultStorePlace'
+        'defaultStoreId' => 'default_store_id',
+        'defaultStorePlace' => 'default_store_place'
     ];
     
     public $escapekeys = [
         'descShort',
         'descLong',
         'descTec',
-        'default_store_place'
+        'defaultStorePlace'
     ];
 
     public function save(\GodataRest\Table\Article\ArticleTable $articleTable)
     {
+        $this->storage['date_create'] = time();
         return $articleTable->createArticle($this->storage);
     }
 
