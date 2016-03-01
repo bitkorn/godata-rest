@@ -139,19 +139,31 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
     {
         $delete = $this->sql->delete();
         $delete->where(['id' => $id]);
-        return $this->deleteWith($delete);
+        $result = $this->deleteWith($delete);
+        if(is_int($result)) {
+            return $result;
+        }
+        return 0;
     }
 
+    /**
+     * 
+     * @param int $id
+     * @param array $data
+     * @return int
+     */
     public function updateArticle($id, $data)
     {
 //        $this->logger->debug('data: ' . print_r($data, true));
         $update = $this->sql->update();
         $update->set($data)->where(['id' => $id]);
-        $result = $this->updateWith($update);
-        if (empty($result) || !is_array($result)) {
-            return 0;
+        $stmt = $this->sql->prepareStatementForSqlObject($update);
+        $result = $stmt->execute(); // Zend\Db\Adapter\Driver\Pdo\Result
+//        $result = $this->updateWith($update);
+        if ($result->valid() && ($result instanceof \Zend\Db\Adapter\Driver\ResultInterface)) {
+            return $result->count();
         }
-        return count($result);
+        return 0;
     }
 
 }

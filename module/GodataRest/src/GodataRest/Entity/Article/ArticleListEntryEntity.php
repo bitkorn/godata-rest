@@ -74,7 +74,9 @@ class ArticleListEntryEntity extends \GodataRest\Entity\AbstractEntity
 
     public function save(\GodataRest\Table\Article\ArticleListTable $articleListTable)
     {
-        return $articleListTable->createArticleListPart($this->getArrayCopyPure());
+        $arrayCopyPure = $this->getArrayCopyPure();
+        unset($arrayCopyPure['count_sub_articles']);
+        return $articleListTable->createArticleListPart($arrayCopyPure);
     }
 
     public function update(\GodataRest\Table\Article\ArticleListTable $articleListTable)

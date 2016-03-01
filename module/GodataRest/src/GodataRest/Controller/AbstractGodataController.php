@@ -23,10 +23,13 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
     protected $logger;
     
     /**
-     * The response array to use recommended. Predefined with keys 'messages' and 'data'.
+     * The response array to use recommended. Predefined with keys 'messages', 'data' and 'result'.
+     * messages: array with messages
+     * data: an array with the data
+     * result: a status/result integer (default 0).
      * @var array
      */
-    protected $responseArr = ['messages' => [], 'data' => []];
+    protected $responseArr = ['messages' => [], 'data' => [], 'result' => 0];
 
     /**
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS

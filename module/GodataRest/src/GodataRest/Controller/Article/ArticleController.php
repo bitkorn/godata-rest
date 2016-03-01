@@ -3,6 +3,7 @@
 namespace GodataRest\Controller\Article;
 
 use Zend\View\Model\JsonModel;
+use Zend\Http\PhpEnvironment\Response;
 
 /**
  * Description of Article
@@ -102,6 +103,12 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->exchangeArray($data);
             $this->responseArr['id'] = $articleEntity->save($this->articleTable);
+            if($this->responseArr['id'] > 0) {
+//                $this->getLogger()->debug('the class: ' . get_class($this->response)); // Zend\Http\PhpEnvironment\Response
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+            } else {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            }
         }
         return new JsonModel($this->responseArr);
     }
@@ -114,9 +121,19 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function delete($id)
     {
-        $responseArr = ['id' => $id];
-        $responseArr['result'] = $this->articleTable->deleteArticle($id);
-        return new JsonModel($responseArr);
+        $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if(!$idFiltered) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->responseArr['messages'][] = 'id must be an integer';
+        }
+        $this->responseArr = ['id' => $idFiltered];
+        $this->responseArr['result'] = $this->articleTable->deleteArticle($idFiltered);
+        if($this->responseArr['result'] > 0) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+        } else {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        }
+        return new JsonModel($this->responseArr);
     }
 
     /**
@@ -134,6 +151,11 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->exchangeArray($data);
             $responseArr['result'] = $articleEntity->update($this->articleTable);
+            if($responseArr['result'] > 0) {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+            } else {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_202);
+            }
         }
         return new JsonModel($responseArr);
     }

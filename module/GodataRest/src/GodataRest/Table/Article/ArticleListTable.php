@@ -66,14 +66,19 @@ class ArticleListTable extends AbstractTableGateway implements AdapterAwareInter
         return (int) $resultArray['entries_count'];
     }
 
+    /**
+     * 
+     * @param array $data
+     * @return int
+     */
     public function createArticleListPart(array $data)
     {
         $insert = $this->sql->insert();
         $insert->values($data);
-        $result = $this->insertWith($insert);
-        if ($result >= 1) {
-//            $this->sql->select()->columns([]);
-            return $this->lastInsertValue;
+        $stmt = $this->sql->prepareStatementForSqlObject($insert);
+        $result = $stmt->execute(); // Zend\Db\Adapter\Driver\Pdo\Result
+        if ($result->valid() && ($result instanceof \Zend\Db\Adapter\Driver\ResultInterface)) {
+            return $result->getGeneratedValue();
         }
         return 0;
     }
@@ -94,10 +99,10 @@ class ArticleListTable extends AbstractTableGateway implements AdapterAwareInter
     {
         $delete = $this->sql->delete();
         $delete->where(['id' => $id]);
-        $result = $this->deleteWith($delete);
-        if ($result == 1) {
-//            $this->sql->select()->columns([]);
-            return $id;
+        $stmt = $this->sql->prepareStatementForSqlObject($delete);
+        $result = $stmt->execute(); // Zend\Db\Adapter\Driver\Pdo\Result
+        if ($result->valid() && ($result instanceof \Zend\Db\Adapter\Driver\ResultInterface)) {
+            return $result->count();
         }
         return 0;
     }

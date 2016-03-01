@@ -60,10 +60,10 @@ class StockInTable extends AbstractTableGateway implements AdapterAwareInterface
     {
         $insert = $this->sql->insert();
         $insert->values($data);
-        $result = $this->insertWith($insert);
-        if ($result >= 1) {
-//            $this->sql->select()->columns([]);
-            return $this->lastInsertValue;
+        $stmt = $this->sql->prepareStatementForSqlObject($insert);
+        $result = $stmt->execute();
+        if($result->valid() && ($result instanceof \Zend\Db\Adapter\Driver\ResultInterface)) {
+            return $result->getGeneratedValue();
         }
         return 0;
     }
@@ -80,11 +80,12 @@ class StockInTable extends AbstractTableGateway implements AdapterAwareInterface
 //        $this->logger->debug('data: ' . print_r($data, true));
         $update = $this->sql->update();
         $update->set($data)->where(['id' => $id]);
-        $result = $this->updateWith($update);
-        if (empty($result) || !is_array($result)) {
-            return 0;
+        $stmt = $this->sql->prepareStatementForSqlObject($update);
+        $result = $stmt->execute();
+        if ($result->valid() && ($result instanceof \Zend\Db\Adapter\Driver\ResultInterface)) {
+            return $result->count();
         }
-        return count($result);
+        return 0;
     }
 
 }

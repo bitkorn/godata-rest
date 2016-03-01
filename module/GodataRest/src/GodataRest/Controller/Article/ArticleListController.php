@@ -31,27 +31,20 @@ class ArticleListController extends \GodataRest\Controller\AbstractGodataControl
      */
     public function get($id)
     {
-//        $this->getLogger()->debug('ArticleList GET ID: ' . $id);
         $articleListData = $this->articleListTablex->getArticleList(filter_var($id, FILTER_VALIDATE_INT, ['min_range' => 1]));
-//        $this->getLogger()->debug(print_r($articleListData, true));
-        $articleList = [];
         if (!empty($articleListData)) {
             foreach ($articleListData as $articleListEntryData) {
                 $articleListEntity = new \GodataRest\Entity\Article\ArticleListEntryEntity();
                 $articleListEntity->flipMapping();
                 $articleListEntity->flipMappingArticle();
                 $articleListEntity->exchangeArray($articleListEntryData);
-//                $this->getLogger()->debug('storage: ' . print_r($articleListEntity->getArrayCopy(), true));
                 $articleListEntity->escapeForOutput();
-                $articleList[] = $articleListEntity->getArrayCopy();
+                $this->responseArr['data'][] = $articleListEntity->getArrayCopy();
             }
-//            $articleList = $articleListData;
         } else {
-            $articleList['messages'][] = 'no article list available';
+            $this->responseArr['messages'][] = 'no article list available';
         }
-        return new JsonModel(
-                $articleList
-        );
+        return new JsonModel($this->responseArr);
     }
 
     /**
@@ -64,17 +57,19 @@ class ArticleListController extends \GodataRest\Controller\AbstractGodataControl
      */
     public function create($data)
     {
-//        $this->getLogger()->debug('create: ' . print_r($data, true));
-        $lastInsertId = 0;
         if ($data && is_array($data)) {
             $articleListEntryEntity = new \GodataRest\Entity\Article\ArticleListEntryEntity();
             $articleListEntryEntity->exchangeArray($data);
-            $lastInsertId = $articleListEntryEntity->save($this->articleListTable);
-//            $this->getLogger()->debug('lastInsertId: ' . $lastInsertId);
+            $this->responseArr['id'] = $articleListEntryEntity->save($this->articleListTable);
+            if ($this->responseArr['id'] > 0) {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+            } else {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            }
+        } else {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
         }
-        return new JsonModel(
-                ['id' => $lastInsertId]
-        );
+        return new JsonModel($this->responseArr);
     }
 
     /**
@@ -85,11 +80,14 @@ class ArticleListController extends \GodataRest\Controller\AbstractGodataControl
      */
     public function delete($id)
     {
-        $this->getLogger()->debug('delete: ' . $id);
-        $result = $this->articleListTable->deleteArticleListPart($id);
-        return new JsonModel(
-                ['id' => $id, 'result' => $result]
-        );
+        $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if(!$idFiltered) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->responseArr['messages'][] = 'id must be an integer';
+        }
+        $this->responseArr = ['id' => $idFiltered];
+        $this->responseArr['result'] = $this->articleListTable->deleteArticleListPart($idFiltered);
+        return new JsonModel($this->responseArr);
     }
 
     public function setArticleListTablex(\GodataRest\Tablex\Article\ArticleListTablex $articleListTablex)
