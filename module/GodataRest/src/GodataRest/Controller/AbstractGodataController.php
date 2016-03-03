@@ -23,7 +23,7 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
     protected $logger;
     
     /**
-     * The response array to use recommended. Predefined with keys 'messages', 'data' and 'result'.
+     * It is recommended to use the response array. Predefined with the keys 'messages', 'data' and 'result'.
      * messages: array with messages
      * data: an array with the data
      * result: a status/result integer (default 0).
@@ -33,8 +33,8 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
 
     /**
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS
-     * wird vom browser nur einmal aufgerufen
-     * ...damit werden die header einmalig gesetzt:
+     * "only requested once" by the browser so the headers are set.
+     * The headers:
      * 2016-02-02T14:11:38+01:00 DEBUG (7): onDispatch Method: options
      * 2016-02-02T14:11:38+01:00 DEBUG (7): options :)
      * 2016-02-02T14:11:38+01:00 DEBUG (7): REQUEST_METHOD == OPTIONS
