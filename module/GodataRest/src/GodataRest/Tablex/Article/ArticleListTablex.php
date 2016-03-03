@@ -38,7 +38,7 @@ class ArticleListTablex extends \GodataRest\Tablex\AbstractGodataTablex
     }
 
     /**
-     * Give next level article from table db.article_list and joun them with db.article
+     * Give article from the next level (in db.article_list) and join them with db.article
      * and count sub articles:
      * SELECT al.*, (SELECT COUNT(id) FROM article_list WHERE article_id_parent=al.article_id) AS countSub FROM article_list al where article_id_parent=14;
      * @param int $articleId
