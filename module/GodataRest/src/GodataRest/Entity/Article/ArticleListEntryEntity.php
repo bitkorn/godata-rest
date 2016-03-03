@@ -3,7 +3,7 @@
 namespace GodataRest\Entity\Article;
 
 /**
- * ArticleListEntryEntity manage the data for article list and in each article list entry the article data.
+ * ArticleListEntryEntity manages the data for the article-list and in each article-list-entry the article data.
  *
  * @author allapow
  */
@@ -51,7 +51,7 @@ class ArticleListEntryEntity extends \GodataRest\Entity\AbstractEntity
     }
 
     /**
-     * Override which includes the article data.
+     * Override to also have the article data.
      * @param array $data
      */
     public function exchangeArray($data)
@@ -85,7 +85,7 @@ class ArticleListEntryEntity extends \GodataRest\Entity\AbstractEntity
     }
 
     /**
-     * Get only the article list data, without the article data.
+     * Only get the article list data, without the article data.
      * @return array
      */
     public function getArrayCopyPure()
@@ -96,7 +96,7 @@ class ArticleListEntryEntity extends \GodataRest\Entity\AbstractEntity
     }
     
     /**
-     * Override to escape also (call parent::escapeForOutput()) the article data.
+     * Override to also escape (call parent::escapeForOutput()) the article data.
      */
     public function escapeForOutput()
     {
