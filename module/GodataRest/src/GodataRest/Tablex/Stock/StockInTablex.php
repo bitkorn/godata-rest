@@ -21,17 +21,26 @@ class StockInTablex extends \GodataRest\Tablex\AbstractGodataTablex
 //        $this->logger->debug('count: ' . $returnArray['count']);
         if ($returnArray['count'] > 0) {
             $sql = new \Zend\Db\Sql\Sql($this->adapter);
-            $select = $sql->select('stock_in');
+            $select = $sql->select(['si' => 'stock_in']);
+            try {
+                $articleDbColumns = (new \GodataRest\Tablex\Article\ArticleListTablex())->getArticleDbColums();
+                unset($articleDbColumns['unit']);
+                $select->join(
+                        ['a' => 'article'], 'si.article_id = a.id', $articleDbColumns, \Zend\Db\Sql\Select::JOIN_LEFT
+                );
+            } catch (\Zend\Db\Sql\Exception\InvalidArgumentException $ex) {
+                $this->logger->err('InvalidArgumentException: ' . $ex->getMessage());
+            }
             if ($articleNo != '') {
                 $selectSubArticle = $sql->select('article')->columns(['id']);
                 $selectSubArticle->where(['article_no' => $articleNo]);
-                $select->where->in('article_id', $selectSubArticle);
+                $select->where->in('si.article_id', $selectSubArticle);
             }
             if (!empty($entryTimeFrom)) {
-                $select->where->greaterThanOrEqualTo('entry_time', $entryTimeFrom);
+                $select->where->greaterThanOrEqualTo('si.entry_time', $entryTimeFrom);
             }
             if (!empty($entryTimeTo)) {
-                $select->where->lessThanOrEqualTo('entry_time', $entryTimeTo);
+                $select->where->lessThanOrEqualTo('si.entry_time', $entryTimeTo);
             }
             if ($size > 0) {
                 $offset = ($page - 1) * $size;
@@ -99,9 +108,7 @@ class StockInTablex extends \GodataRest\Tablex\AbstractGodataTablex
             $articleDbColumns = (new \GodataRest\Tablex\Article\ArticleListTablex())->getArticleDbColums();
             unset($articleDbColumns['unit']);
             $select->join(
-                    ['a' => 'article'], 'si.article_id = a.id',
-                    $articleDbColumns,
-                    \Zend\Db\Sql\Select::JOIN_LEFT
+                    ['a' => 'article'], 'si.article_id = a.id', $articleDbColumns, \Zend\Db\Sql\Select::JOIN_LEFT
             );
         } catch (\Zend\Db\Sql\Exception\InvalidArgumentException $ex) {
             $this->logger->err($ex->getMessage());
@@ -111,9 +118,10 @@ class StockInTablex extends \GodataRest\Tablex\AbstractGodataTablex
             $stmt = $sql->prepareStatementForSqlObject($select);
             $result = $stmt->execute();
             if (!empty($result) && $result instanceof Result && $result->count() > 0) {
-                while ($result->next()) {
-                    $returnArray[] = $result->current();
-                }
+                $returnArray = $result->current();
+//                while ($result->next()) {
+//                    $returnArray[] = $result->current();
+//                }
             }
             return $returnArray;
         } catch (\RuntimeException $ex) {

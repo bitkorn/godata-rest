@@ -14,7 +14,7 @@ namespace GodataRest\Entity\Stock;
  * @author allapow
  * @todo regard joined article data
  */
-class StockInEntity extends \GodataRest\Entity\AbstractEntity
+class StockInEntity extends \GodataRest\Entity\Article\JoinArticleEntity
 {
 
     /**
@@ -32,25 +32,15 @@ class StockInEntity extends \GodataRest\Entity\AbstractEntity
         'unit' => 'unit',
         'entryTime' => 'entry_time'
     ];
-    
     public $escapekeys = [
         'storePlace',
         'charge'
     ];
-    
-    const ARTICLE_DATA_KEY = 'articleData';
-    
-    private $mappingArticle = [];
-    
-    private $escapekeysArticle = [];
 
     public function __construct()
     {
         parent::__construct();
-        $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
-        $this->mappingArticle = $articleEntity->mapping;
-        unset($this->mappingArticle['id']);
-        $this->escapekeysArticle = $articleEntity->escapekeys;
+        unset($this->mappingArticle['unit']);
     }
 
     public function save(\GodataRest\Table\Stock\StockInTable $stockInTable)
@@ -62,4 +52,5 @@ class StockInEntity extends \GodataRest\Entity\AbstractEntity
     {
         return $stockInTable->updateStockIn($this->storage['id'], $this->storage);
     }
+
 }

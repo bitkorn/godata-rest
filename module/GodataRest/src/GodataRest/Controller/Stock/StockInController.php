@@ -37,13 +37,16 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
             $this->responseArr['messages'][] = 'id must be an integer';
         }
 //        $this->getLogger()->debug('$idFiltered: ' . $idFiltered);
-        $stockInData = $this->stockInTable->getStockIn($idFiltered);
-        $stockInDataAll = $this->stockInTablex->getStockIn($idFiltered);
-        $this->getLogger()->debug('$stockInDataAll: ' . print_r($stockInDataAll, true));
+//        $stockInData = $this->stockInTable->getStockIn($idFiltered);
+//        $this->getLogger()->debug('$stockInData: ' . print_r($stockInData, true));
+        $stockInData = $this->stockInTablex->getStockIn($idFiltered);
+//        $this->getLogger()->debug('$stockInDataAll: ' . print_r($stockInDataAll, true));
         if (!empty($stockInData)) {
             $stockInEntity = new \GodataRest\Entity\Stock\StockInEntity();
             $stockInEntity->flipMapping();
+            $stockInEntity->flipMappingArticle();
             $stockInEntity->exchangeArray($stockInData);
+//            $this->getLogger()->debug('$stockInEntity: ' . print_r($stockInEntity->getArrayCopy(), true));
             $stockInEntity->escapeForOutput();
             $this->responseArr['data'] = $stockInEntity->getArrayCopy();
         } else {
@@ -91,6 +94,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
             foreach ($stockInsData['data'] as $stockInData) {
                 $stockEntity = new \GodataRest\Entity\Stock\StockInEntity();
                 $stockEntity->flipMapping();
+                $stockEntity->flipMappingArticle();
                 $stockEntity->exchangeArray($stockInData);
                 $stockEntity->escapeForOutput();
                 $this->responseArr['data'][] = $stockEntity->getArrayCopy();
@@ -109,6 +113,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      * and the response body providing the representation.
      * @param json|array $data
      * @return JsonModel property id with last insert id, 0 if error
+     * @todo validate $data
      */
     public function create($data)
     {
@@ -130,6 +135,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      * Return either a 200 or 204 response status.
      * @param int $id
      * @return JsonModel id and result property; result is 1 if success.
+     * @todo implement CRUD
      */
     public function delete($id)
     {
@@ -149,6 +155,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      * @param int $id Query/URL Parameter
      * @param json|array $data Data in request body
      * @return JsonModel id and result property; result is 1 if success.
+     * @todo implement CRUD
      */
     public function update($id, $data)
     {
