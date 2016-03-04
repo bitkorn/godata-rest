@@ -17,7 +17,7 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
 {
 
     /**
-     * Public because ArticleListEntryEntity take a copy.
+     * Public because ArticleListEntryEntity takes a copy.
      * @var array
      */
     public $mapping = [];
@@ -32,7 +32,7 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
     }
 
     /**
-     * First set storage empty values to have no unset key.
+     * First set $storage empty-values to have no unset key.
      * Exchange $data to an Array and set class members.
      * @param array $data
      */
