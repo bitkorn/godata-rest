@@ -22,6 +22,7 @@ class ArticleListTablex extends \GodataRest\Tablex\AbstractGodataTablex
                         where article_id_parent=?';
 
     /**
+     * article database columns except column 'id'
      * @var array
      */
     private $articleDbColums = ['article_no', 'article_type', 'article_group', 'article_class', 'desc_short', 'desc_long', 'desc_tec',
@@ -99,6 +100,11 @@ class ArticleListTablex extends \GodataRest\Tablex\AbstractGodataTablex
 //            $this->logger->err($ex->getMessage());
 //        }
         return $returnArray;
+    }
+    
+    public function getArticleDbColums()
+    {
+        return $this->articleDbColums;
     }
 
 }

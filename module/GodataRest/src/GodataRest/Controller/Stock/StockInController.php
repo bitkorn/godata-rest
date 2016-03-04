@@ -36,14 +36,16 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
+//        $this->getLogger()->debug('$idFiltered: ' . $idFiltered);
         $stockInData = $this->stockInTable->getStockIn($idFiltered);
-//        $this->getLogger()->debug(print_r($articleData, true));
+        $stockInDataAll = $this->stockInTablex->getStockIn($idFiltered);
+        $this->getLogger()->debug('$stockInDataAll: ' . print_r($stockInDataAll, true));
         if (!empty($stockInData)) {
             $stockInEntity = new \GodataRest\Entity\Stock\StockInEntity();
             $stockInEntity->flipMapping();
             $stockInEntity->exchangeArray($stockInData);
             $stockInEntity->escapeForOutput();
-            $this->responseArr = $stockInEntity->getArrayCopy();
+            $this->responseArr['data'] = $stockInEntity->getArrayCopy();
         } else {
             $this->responseArr['messages'][] = 'no stock available';
         }
@@ -150,15 +152,17 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      */
     public function update($id, $data)
     {
-        $result = 0;
-        $jsonArr = new JsonModel();
-        $jsonArr->setVariable('id', $id);
+        $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $this->getLogger()->debug('$idFiltered: ' . $idFiltered);
+        if(!$idFiltered) {
+            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->responseArr['messages'][] = 'id must be an integer';
+        }
+        
         if ($data && is_array($data)) {
             
         }
-        return new JsonModel(
-                ['id' => $id, 'result' => $result]
-        );
+        return new JsonModel($this->responseArr);
     }
 
     public function setStockInTable(\GodataRest\Table\Stock\StockInTable $stockInTable)

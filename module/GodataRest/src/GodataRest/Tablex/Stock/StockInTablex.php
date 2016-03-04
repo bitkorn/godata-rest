@@ -85,4 +85,41 @@ class StockInTablex extends \GodataRest\Tablex\AbstractGodataTablex
         return 0;
     }
 
+    /**
+     * StockIn joined with article
+     * @param int $id
+     * @return array
+     */
+    public function getStockIn($id)
+    {
+        $returnArray = [];
+        $sql = new \Zend\Db\Sql\Sql($this->adapter);
+        $select = $sql->select(['si' => 'stock_in']);
+        try {
+            $articleDbColumns = (new \GodataRest\Tablex\Article\ArticleListTablex())->getArticleDbColums();
+            unset($articleDbColumns['unit']);
+            $select->join(
+                    ['a' => 'article'], 'si.article_id = a.id',
+                    $articleDbColumns,
+                    \Zend\Db\Sql\Select::JOIN_LEFT
+            );
+        } catch (\Zend\Db\Sql\Exception\InvalidArgumentException $ex) {
+            $this->logger->err($ex->getMessage());
+        }
+        $select->where(['si.id' => $id]);
+        try {
+            $stmt = $sql->prepareStatementForSqlObject($select);
+            $result = $stmt->execute();
+            if (!empty($result) && $result instanceof Result && $result->count() > 0) {
+                while ($result->next()) {
+                    $returnArray[] = $result->current();
+                }
+            }
+            return $returnArray;
+        } catch (\RuntimeException $ex) {
+            $this->logger->err($ex->getMessage());
+        }
+        return [];
+    }
+
 }
