@@ -12,7 +12,7 @@ namespace GodataRest\Entity\Stock;
  * Description of ArticleEntity
  *
  * @author allapow
- * @todo regard joined article data
+ * @todo use the StockInFilter
  */
 class StockInEntity extends \GodataRest\Entity\Article\JoinArticleEntity
 {
@@ -21,9 +21,8 @@ class StockInEntity extends \GodataRest\Entity\Article\JoinArticleEntity
      *
      * @var array Array with Key=property; value=db column
      */
-    public $mapping = [
+    protected $mapping = [
         'id' => 'id',
-//        'articleNo' => 'article_no', // no db equivalent
         'articleId' => 'article_id',
         'storeId' => 'store_id',
         'storePlace' => 'store_place',
@@ -32,7 +31,8 @@ class StockInEntity extends \GodataRest\Entity\Article\JoinArticleEntity
         'unit' => 'unit',
         'entryTime' => 'entry_time'
     ];
-    public $escapekeys = [
+    
+    protected $escapekeys = [
         'storePlace',
         'charge'
     ];

@@ -20,8 +20,8 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
      * Public because ArticleListEntryEntity takes a copy.
      * @var array
      */
-    public $mapping = [];
-    public $escapekeys = [];
+    protected $mapping = [];
+    protected $escapekeys = [];
 
     /**
      * Flip if data comes from DB
@@ -55,6 +55,16 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
         foreach ($this->escapekeys as $escapeKey) {
             $this->storage[$escapeKey] = $escaper->escapeHtml($this->storage[$escapeKey]);
         }
+    }
+    
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
+
+    public function getEscapekeys()
+    {
+        return $this->escapekeys;
     }
 
 }

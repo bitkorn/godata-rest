@@ -20,7 +20,7 @@ class ArticleEntity extends \GodataRest\Entity\AbstractEntity
      *
      * @var array Array with Key=property; value=db column
      */
-    public $mapping = [
+    protected $mapping = [
         'id' => 'id',
         'articleNo' => 'article_no',
         'articleType' => 'article_type',
@@ -39,7 +39,7 @@ class ArticleEntity extends \GodataRest\Entity\AbstractEntity
         'defaultStorePlace' => 'default_store_place'
     ];
     
-    public $escapekeys = [
+    protected $escapekeys = [
         'descShort',
         'descLong',
         'descTec',

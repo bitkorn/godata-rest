@@ -6,30 +6,27 @@
  * and open the template in the editor.
  */
 
-namespace GodataRest\Validator;
+namespace GodataRest\Validator\Article;
 
 /**
- * Description of AgentNumber
+ * Validate against article number rules.
  *
  * @author allapow
  */
-class AgentNumber extends \Zend\Validator\AbstractValidator
+class ArticleNumber extends \Zend\Validator\AbstractValidator
 {
 
-    const AGENT_NUMBER_FALSE = '';
+    const ARTICLE_NUMBER_FALSE = 'articleNumberFalse';
 
     protected $messageTemplates = array(
-        self::AGENT_NUMBER_FALSE => "'%value%' ist keine Agent-Number like 007 or 1234"
+        self::ARTICLE_NUMBER_FALSE => "'%value%' ist keine Article-Number like 007 or 1234"
     );
 
     public function isValid($value)
     {
         $this->setValue($value);
         $intValString = '' . $this->value;
-//        if (!is_int($intVal) || $intValString != $value) {
-//            $this->error(self::INT_FALSE);
-//            return false;
-//        }
+        
         return true;
     }
 

@@ -25,9 +25,9 @@ class JoinArticleEntity extends \GodataRest\Entity\AbstractEntity
     {
         parent::__construct();
         $articleEntity = new ArticleEntity();
-        $this->mappingArticle = $articleEntity->mapping;
+        $this->mappingArticle = $articleEntity->getMapping();
         unset($this->mappingArticle['id']);
-        $this->escapekeysArticle = $articleEntity->escapekeys;
+        $this->escapekeysArticle = $articleEntity->getEscapekeys();
     }
 
     /**

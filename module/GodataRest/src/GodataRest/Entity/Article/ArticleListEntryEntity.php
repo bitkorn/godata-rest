@@ -14,7 +14,7 @@ class ArticleListEntryEntity extends JoinArticleEntity
      *
      * @var array Array with Key=property; value=db column
      */
-    public $mapping = [
+    protected $mapping = [
         'id' => 'id',
         'articleIdParent' => 'article_id_parent',
         'articleId' => 'article_id',
@@ -22,7 +22,7 @@ class ArticleListEntryEntity extends JoinArticleEntity
         'desc' => 'desc',
         'countSubArticles' => 'count_sub_articles' // no db field
     ];
-    public $escapekeys = [
+    protected $escapekeys = [
         'desc'
     ];
 

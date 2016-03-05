@@ -6,13 +6,15 @@ use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\BootstrapListenerInterface;
 use Zend\ModuleManager\Feature\ControllerProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
+use Zend\ModuleManager\Feature\ValidatorProviderInterface;
 use Zend\Mvc\MvcEvent;
 
 /**
  * 
  * 
  */
-class Module implements AutoloaderProviderInterface, BootstrapListenerInterface, ControllerProviderInterface, ServiceProviderInterface
+class Module implements AutoloaderProviderInterface, BootstrapListenerInterface, ControllerProviderInterface, ServiceProviderInterface,
+        ValidatorProviderInterface
 {
 
     public function getConfig()
@@ -41,7 +43,8 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
         $sharedEventManager = $eventManager->getSharedManager();
         $serviceManager = $e->getApplication()->getServiceManager();
         $sharedEventManager->attach(
-                __NAMESPACE__, MvcEvent::EVENT_DISPATCH, function($e) use ($serviceManager) {
+                __NAMESPACE__, MvcEvent::EVENT_DISPATCH,
+                function($e) use ($serviceManager) {
             $strategy = $serviceManager->get('ViewJsonStrategy');
             $view = $serviceManager->get('ViewManager')->getView();
             $strategy->attach($view->getEventManager());
@@ -123,6 +126,18 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     $table->setLogger($sm->get('logger'));
                     return $table;
                 },
+                'GodataRest\Table\Store\Store' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $table = new \GodataRest\Table\Store\StoreTable();
+                    $table->setDbAdapter($sm->get('dbGodatas'));
+                    $table->setLogger($sm->get('logger'));
+                    return $table;
+                },
+                'GodataRest\Table\Common\Unit' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $table = new \GodataRest\Table\Common\UnitTable();
+                    $table->setDbAdapter($sm->get('dbGodatas'));
+                    $table->setLogger($sm->get('logger'));
+                    return $table;
+                },
                 /*
                  * TableX
                  */
@@ -138,6 +153,41 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     $table->setLogger($sm->get('logger'));
                     return $table;
                 },
+                /*
+                 * Filter
+                 */
+                'GodataRest\Input\Stock\StockIn' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $filter = new Input\Stock\StockInFilter();
+                    /*
+                     * because, registering Validators in getValidatorConfig() does not work:
+                     */
+                    $existArticleIdValidator = new Validator\Article\ExistArticleId();
+                    $existArticleIdValidator->setArticleTable($sm->get('GodataRest\Table\Article\Article'));
+                    $filter->setExistArticleIdValidator($existArticleIdValidator);
+                    $existStoreIdValidator = new Validator\Store\ExistStoreId();
+                    $existStoreIdValidator->setStoreTable($sm->get('GodataRest\Table\Store\Store'));
+                    $filter->setExistStoreIdValidator($existStoreIdValidator);
+                    $existUnitIdValidator = new Validator\Common\ExistUnitId();
+                    $existUnitIdValidator->setUnitTable($sm->get('GodataRest\Table\Common\Unit'));
+                    $filter->setExistUnitIdValidator($existUnitIdValidator);
+                    return $filter;
+                },
+            )
+        );
+    }
+
+    public function getValidatorConfig()
+    {
+        return array(
+            'factories' => array(
+                // does not work:
+//                'GodataRest\Validator\Article\ExistArticleId' => function(\Zend\Validator\ValidatorPluginManager $pm) {
+//                    $logger = $pm->get('logger');
+//                    $logger->debug('getValidatorConfig: ' . get_class($pm));
+//                    $validator = new \GodataRest\Validator\Article\ExistArticleId();
+//                    $validator->setArticleTable($s->get('GodataRest\Table\Article\Article'));
+//                    return $validator;
+//                }
             )
         );
     }

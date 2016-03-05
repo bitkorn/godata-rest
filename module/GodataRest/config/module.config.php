@@ -66,7 +66,8 @@ return array(
         'factories' => array(
         ),
         'invokables' => array(
-//            'PlentymarkTest\Table\Country' => 'PlentymarkTest\Table\CountryTable',
+            // Filter
+//            'GodataRest\Input\Stock\StockIn' => 'GodataRest\Input\Stock\StockInFilter',
         ),
     ),
     'view_manager' => array(
@@ -74,4 +75,9 @@ return array(
             'GodataRest' => __DIR__ . '/../view',
         ),
     ),
+    'validators' => array(
+        'invokables' => array(
+//            'ExistArticleIdValidator' => 'GodataRest\Validator\Article\ExistArticleId'
+        )
+    )
 );
