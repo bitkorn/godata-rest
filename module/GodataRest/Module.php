@@ -77,6 +77,18 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     $ctr->setArticleTypeTable($sl->get('GodataRest\Table\Article\ArticleType'));
                     return $ctr;
                 },
+                'GodataRest\Controller\Article\ArticleGroup' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
+                    $sl = $cm->getServiceLocator();
+                    $ctr = new \GodataRest\Controller\Article\ArticleGroupController();
+                    $ctr->setArticleGroupTable($sl->get('GodataRest\Table\Article\ArticleGroup'));
+                    return $ctr;
+                },
+                'GodataRest\Controller\Article\ArticleClass' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
+                    $sl = $cm->getServiceLocator();
+                    $ctr = new \GodataRest\Controller\Article\ArticleClassController();
+                    $ctr->setArticleClassTable($sl->get('GodataRest\Table\Article\ArticleClass'));
+                    return $ctr;
+                },
                 'GodataRest\Controller\Article\ArticleList' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
                     $ctr = new \GodataRest\Controller\Article\ArticleListController();
@@ -110,6 +122,18 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                 },
                 'GodataRest\Table\Article\ArticleType' => function(\Zend\ServiceManager\ServiceManager $sm) {
                     $table = new \GodataRest\Table\Article\ArticleTypeTable();
+                    $table->setDbAdapter($sm->get('dbGodatas'));
+                    $table->setLogger($sm->get('logger'));
+                    return $table;
+                },
+                'GodataRest\Table\Article\ArticleGroup' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $table = new \GodataRest\Table\Article\ArticleGroupTable();
+                    $table->setDbAdapter($sm->get('dbGodatas'));
+                    $table->setLogger($sm->get('logger'));
+                    return $table;
+                },
+                'GodataRest\Table\Article\ArticleClass' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $table = new \GodataRest\Table\Article\ArticleClassTable();
                     $table->setDbAdapter($sm->get('dbGodatas'));
                     $table->setLogger($sm->get('logger'));
                     return $table;
@@ -182,7 +206,8 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
             'factories' => array(
                 // does not work:
 //                'GodataRest\Validator\Article\ExistArticleId' => function(\Zend\Validator\ValidatorPluginManager $pm) {
-//                    $logger = $pm->get('logger');
+//                    $sm = $pm->getServiceLocator();
+//                    $logger = $sm->get('logger');
 //                    $logger->debug('getValidatorConfig: ' . get_class($pm));
 //                    $validator = new \GodataRest\Validator\Article\ExistArticleId();
 //                    $validator->setArticleTable($s->get('GodataRest\Table\Article\Article'));

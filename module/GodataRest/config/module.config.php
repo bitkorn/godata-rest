@@ -29,6 +29,26 @@ return array(
                     ),
                 ),
             ),
+            'godatarest_article_group' => array(
+                'type' => 'literal',
+                'options' => array(
+                    'route' => '/article-group',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'GodataRest\Controller\Article',
+                        'controller' => 'ArticleGroup',
+                    ),
+                ),
+            ),
+            'godatarest_article_class' => array(
+                'type' => 'literal',
+                'options' => array(
+                    'route' => '/article-class',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'GodataRest\Controller\Article',
+                        'controller' => 'ArticleClass',
+                    ),
+                ),
+            ),
             'godatarest_article_list' => array(
                 'type' => 'Segment',
                 'options' => array(
