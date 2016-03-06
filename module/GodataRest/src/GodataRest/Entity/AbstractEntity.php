@@ -22,6 +22,12 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
      */
     protected $mapping = [];
     protected $escapekeys = [];
+    
+    /**
+     * Associative array with messages from validation.
+     * @var array [key($this->mapping) => ['message1','message2']]
+     */
+    protected $validateMessages = [];
 
     /**
      * Flip if data comes from DB
@@ -65,6 +71,11 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
     public function getEscapekeys()
     {
         return $this->escapekeys;
+    }
+    
+    public function getValidateMessages()
+    {
+        return $this->validateMessages;
     }
 
 }

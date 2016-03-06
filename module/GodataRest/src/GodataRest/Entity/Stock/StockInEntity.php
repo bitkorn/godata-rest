@@ -42,10 +42,34 @@ class StockInEntity extends \GodataRest\Entity\Article\JoinArticleEntity
         parent::__construct();
         unset($this->mappingArticle['unit']);
     }
+    
+    /**
+     * Validate input data for storage in database.
+     * In this direction (input -> database) the $this->mapping array are not fliped!
+     * If data are invalid, the messages key in $this->validateMessages is the key from unplipped $this->mapping.
+     * @param \Zend\InputFilter\InputFilter $inputFilter
+     * @return boolean
+     */
+    public function isValid(\Zend\InputFilter\InputFilter $inputFilter) {
+        $inputFilter->setData($this->storage);
+        $isValid = $inputFilter->isValid();
+        if(!$isValid) {
+            $messages = $inputFilter->getMessages();
+            $flippedMapping = array_flip($this->mapping);
+            foreach ($messages as $key => $message) {
+                if(isset($flippedMapping[$key])) {
+                    $this->validateMessages[$flippedMapping[$key]] = $message;
+                }
+            }
+        }
+        return $isValid;
+    }
 
     public function save(\GodataRest\Table\Stock\StockInTable $stockInTable)
     {
-        return $stockInTable->createStockIn($this->storage);
+        $arrayCopyPure = $this->getArrayCopyPure();
+        $arrayCopyPure['entry_time'] = time();
+        return $stockInTable->createStockIn($arrayCopyPure);
     }
 
     public function update(\GodataRest\Table\Stock\StockInTable $stockInTable)

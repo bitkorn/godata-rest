@@ -24,7 +24,7 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
     
     /**
      * It is recommended to use the response array. Predefined with the keys 'messages', 'data' and 'result'.
-     * messages: array with messages
+     * messages: array with messages. Messages with an integer key are global and with string key they belongs to a datafield.
      * data: an array with the data
      * result: a status/result integer (default 0).
      * @var array

@@ -3,6 +3,7 @@
 namespace GodataRest\Controller\Stock;
 
 use Zend\View\Model\JsonModel;
+use Zend\Http\PhpEnvironment\Response;
 
 /**
  * Description of StockInController
@@ -39,7 +40,6 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
     {
         // Tests
 //        $stockInFilter = $this->getStockInFilter();
-//        $stockInFilter->init();
 //        $stockInFilter->setData(['article_id' => 14, 'store_id' => 2, 'store_place' => '36gdbf', 'charge' => 'hsg6354', 'quantity' => '22.23', 'unit' => 'sf']);
 //        $this->getLogger()->debug('StockInFilter: ' . ($stockInFilter->isValid() ? 'valid': 'unvalid: ' . print_r($stockInFilter->getMessages(), true)));
 //        if($stockInFilter->isValid()) {
@@ -129,21 +129,22 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      * The response should typically be an HTTP 201 response
      * with the Location header indicating the URI of the newly created entity
      * and the response body providing the representation.
-     * @param json|array $data
+     * @param array $data
      * @return JsonModel property id with last insert id, 0 if error
-     * @todo use the StockInFilter
      */
     public function create($data)
     {
         if ($data && is_array($data)) {
-            /**
-             * @todo validate request data
-             * @todo required fields check
-             */
             $stockEntity = new \GodataRest\Entity\Stock\StockInEntity();
             $data['entryTime'] = time(); // mit Hand eingeben lassen?!?!???
             $stockEntity->exchangeArray($data);
-            $this->responseArr['id'] = $stockEntity->save($this->stockInTable);
+            if($stockEntity->isValid($this->getStockInFilter())) {
+                $this->responseArr['id'] = $stockEntity->save($this->stockInTable);
+            } else {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                $this->responseArr['messages'] = $stockEntity->getValidateMessages();
+                $this->getLogger()->debug('invalid: ' . print_r($stockEntity->getValidateMessages(), true));
+            }
         }
         return new JsonModel($this->responseArr);
     }
@@ -208,6 +209,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
     private function getStockInFilter() {
         if(!isset($this->stockInFilter)) {
             $this->stockInFilter = $this->serviceLocator->get('GodataRest\Input\Stock\StockIn');
+            $this->stockInFilter->init();
         }
         return $this->stockInFilter;
     }
