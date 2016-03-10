@@ -64,4 +64,18 @@ class ArticleTypeTable extends AbstractTableGateway implements AdapterAwareInter
         return $resultArray;
     }
 
+    public function existArticleType($id) {
+        $select = $this->sql->select();
+        $select->columns([new \Zend\Db\Sql\Expression('COUNT(id) AS count_id')]);
+        $select->where(['id' => $id]);
+        try {
+            $result = $this->selectWith($select);
+            $current = $result->current();
+            return 0 < $current['count_id'];
+        } catch (\RuntimeException $ex) {
+            $this->logger->err($ex->getMessage());
+        }
+        return false;
+    }
+
 }

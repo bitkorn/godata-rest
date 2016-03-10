@@ -26,6 +26,12 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
     private $articleListTable;
 
     /**
+     *
+     * @var \GodataRest\Input\Article\ArticleNewFilter
+     */
+    private $articleNewFilter;
+
+    /**
      * GET
      * @param int $id
      * @return JsonModel Article or message
@@ -102,12 +108,18 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
         if ($data && is_array($data)) {
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->exchangeArray($data);
-            $this->responseArr['id'] = $articleEntity->save($this->articleTable);
-            if($this->responseArr['id'] > 0) {
-//                $this->getLogger()->debug('the class: ' . get_class($this->response)); // Zend\Http\PhpEnvironment\Response
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+//            $this->getLogger()->debug('$data: ' . print_r($data, true));
+            if ($articleEntity->isValid($this->articleNewFilter)) {
+                $this->responseArr['id'] = $articleEntity->save($this->articleTable);
+                if ($this->responseArr['id'] > 0) {
+                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+                } else {
+                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                }
             } else {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                $this->responseArr['messages'] = $articleEntity->getValidateMessages();
+                $this->getLogger()->debug('invalid: ' . print_r($articleEntity->getValidateMessages(), true));
             }
         }
         return new JsonModel($this->responseArr);
@@ -122,13 +134,13 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
     public function delete($id)
     {
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if(!$idFiltered) {
+        if (!$idFiltered) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
         $this->responseArr = ['id' => $idFiltered];
         $this->responseArr['result'] = $this->articleTable->deleteArticle($idFiltered);
-        if($this->responseArr['result'] > 0) {
+        if ($this->responseArr['result'] > 0) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
         } else {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
@@ -151,7 +163,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->exchangeArray($data);
             $responseArr['result'] = $articleEntity->update($this->articleTable);
-            if($responseArr['result'] > 0) {
+            if ($responseArr['result'] > 0) {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
             } else {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_202);
@@ -168,6 +180,12 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
     public function setArticleListTable(\GodataRest\Table\Article\ArticleListTable $articleListTable)
     {
         $this->articleListTable = $articleListTable;
+    }
+
+    public function setArticleNewFilter(\GodataRest\Input\Article\ArticleNewFilter $articleNewFilter)
+    {
+        $this->articleNewFilter = $articleNewFilter;
+        $this->articleNewFilter->init();
     }
 
 }

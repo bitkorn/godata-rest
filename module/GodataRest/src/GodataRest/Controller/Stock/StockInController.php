@@ -24,7 +24,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      * @var \GodataRest\Tablex\Stock\StockInTablex
      */
     private $stockInTablex;
-    
+
     /**
      *
      * @var \GodataRest\Input\Stock\StockInFilter
@@ -45,12 +45,11 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
 //        if($stockInFilter->isValid()) {
 //            $this->getLogger()->debug('FilterValues: ' . print_r($stockInFilter->getValues(), true));
 //        }
-        
 //        $unitTable = $this->serviceLocator->get('GodataRest\Table\Common\Unit');
 //        $this->getLogger()->debug('UnitsIdAssoc: ' . print_r($unitTable->getUnitsIdAssoc(), true));
-        
+
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if(!$idFiltered) {
+        if (!$idFiltered) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
@@ -138,12 +137,17 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
             $stockEntity = new \GodataRest\Entity\Stock\StockInEntity();
             $data['entryTime'] = time(); // mit Hand eingeben lassen?!?!???
             $stockEntity->exchangeArray($data);
-            if($stockEntity->isValid($this->getStockInFilter())) {
+            if ($stockEntity->isValid($this->stockInFilter)) {
                 $this->responseArr['id'] = $stockEntity->save($this->stockInTable);
+                if ($this->responseArr['id'] > 0) {
+                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+                } else {
+                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                }
             } else {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
                 $this->responseArr['messages'] = $stockEntity->getValidateMessages();
-                $this->getLogger()->debug('invalid: ' . print_r($stockEntity->getValidateMessages(), true));
+//                $this->getLogger()->debug('invalid: ' . print_r($stockEntity->getValidateMessages(), true));
             }
         }
         return new JsonModel($this->responseArr);
@@ -159,7 +163,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
     public function delete($id)
     {
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if(!$idFiltered) {
+        if (!$idFiltered) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
@@ -181,11 +185,11 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
     {
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         $this->getLogger()->debug('$idFiltered: ' . $idFiltered);
-        if(!$idFiltered) {
+        if (!$idFiltered) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
-        
+
         if ($data && is_array($data)) {
             
         }
@@ -202,15 +206,10 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
         $this->stockInTablex = $stockInTablex;
     }
 
-    /**
-     * 
-     * @return \GodataRest\Input\Stock\StockInFilter
-     */
-    private function getStockInFilter() {
-        if(!isset($this->stockInFilter)) {
-            $this->stockInFilter = $this->serviceLocator->get('GodataRest\Input\Stock\StockIn');
-            $this->stockInFilter->init();
-        }
-        return $this->stockInFilter;
+    public function setStockInFilter(\GodataRest\Input\Stock\StockInFilter $stockInFilter)
+    {
+        $this->stockInFilter = $stockInFilter;
+        $this->stockInFilter->init();
     }
+
 }

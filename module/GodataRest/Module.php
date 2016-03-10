@@ -69,6 +69,7 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     $ctr = new \GodataRest\Controller\Article\ArticleController();
                     $ctr->setArticleTable($sl->get('GodataRest\Table\Article\Article'));
                     $ctr->setArticleListTable($sl->get('GodataRest\Table\Article\ArticleList'));
+                    $ctr->setArticleNewFilter($sl->get('GodataRest\Input\Article\ArticleNew'));
                     return $ctr;
                 },
                 'GodataRest\Controller\Article\ArticleType' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
@@ -101,6 +102,7 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     $ctr = new \GodataRest\Controller\Stock\StockInController();
                     $ctr->setStockInTable($sl->get('GodataRest\Table\Stock\StockIn'));
                     $ctr->setStockInTablex($sl->get('GodataRest\Tablex\Stock\StockIn'));
+                    $ctr->setStockInFilter($sl->get('GodataRest\Input\Stock\StockIn'));
                     return $ctr;
                 },
             ),
@@ -178,7 +180,7 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     return $table;
                 },
                 /*
-                 * Filter
+                 * Input
                  */
                 'GodataRest\Input\Stock\StockIn' => function(\Zend\ServiceManager\ServiceManager $sm) {
                     $filter = new Input\Stock\StockInFilter();
@@ -194,6 +196,19 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     $existUnitIdValidator = new Validator\Common\ExistUnitId();
                     $existUnitIdValidator->setUnitTable($sm->get('GodataRest\Table\Common\Unit'));
                     $filter->setExistUnitIdValidator($existUnitIdValidator);
+                    return $filter;
+                },
+                'GodataRest\Input\Article\ArticleNew' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $filter = new Input\Article\ArticleNewFilter();
+                    /*
+                     * because, registering Validators in getValidatorConfig() does not work:
+                     */
+                    $existArticleTypeValidator = new Validator\Article\ExistArticleType();
+                    $existArticleTypeValidator->setArticleTypeTable($sm->get('GodataRest\Table\Article\ArticleType'));
+                    $filter->setExistArticleTypeValidator($existArticleTypeValidator);
+                    $existArticleGroupValidator = new Validator\Article\ExistArticleGroup();
+                    $existArticleGroupValidator->setArticleGroupTable($sm->get('GodataRest\Table\Article\ArticleGroup'));
+                    $filter->setExistArticleGroupValidator($existArticleGroupValidator);
                     return $filter;
                 },
             )
