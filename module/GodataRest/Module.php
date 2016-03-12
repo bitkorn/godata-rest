@@ -64,6 +64,11 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
     {
         return array(
             'factories' => array(
+                'GodataRest\Controller\Common\Login' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
+//                    $sl = $cm->getServiceLocator();
+                    $ctr = new \GodataRest\Controller\Common\LoginController();
+                    return $ctr;
+                },
                 'GodataRest\Controller\Article\Article' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
                     $ctr = new \GodataRest\Controller\Article\ArticleController();
