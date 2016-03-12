@@ -21,6 +21,11 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
      * @var array
      */
     protected $mapping = [];
+    
+    /**
+     *
+     * @var array Mapping keys for the values they must be escaped for output.
+     */
     protected $escapekeys = [];
     
     /**

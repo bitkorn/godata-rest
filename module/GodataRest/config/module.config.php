@@ -49,6 +49,16 @@ return array(
                     ),
                 ),
             ),
+            'godatarest_common_unit' => array(
+                'type' => 'literal',
+                'options' => array(
+                    'route' => '/common-unit',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'GodataRest\Controller\Common',
+                        'controller' => 'Unit',
+                    ),
+                ),
+            ),
             'godatarest_article_list' => array(
                 'type' => 'Segment',
                 'options' => array(

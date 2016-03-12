@@ -57,6 +57,26 @@ class UnitTable extends AbstractTableGateway implements AdapterAwareInterface
         return $unitsIdAssoc;
     }
 
+    /**
+     * This is used for AngularJS directive select.
+     * @return array
+     */
+    public function getUnits()
+    {
+        $select = $this->sql->select();
+        $result = $this->selectWith($select);
+        if (empty($result) || $result->count() < 1) {
+            return [];
+        }
+        $resultArray = $result->toArray();
+        return $resultArray;
+    }
+
+    /**
+     * Used from UnitValidator.
+     * @param int $id
+     * @return boolean
+     */
     public function existUnitId($id) {
         $select = $this->sql->select();
         $select->columns([new \Zend\Db\Sql\Expression('COUNT(id) AS count_id')]);

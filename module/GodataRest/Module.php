@@ -90,6 +90,12 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                     $ctr->setArticleClassTable($sl->get('GodataRest\Table\Article\ArticleClass'));
                     return $ctr;
                 },
+                'GodataRest\Controller\Common\Unit' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
+                    $sl = $cm->getServiceLocator();
+                    $ctr = new \GodataRest\Controller\Common\UnitController();
+                    $ctr->setUnitTable($sl->get('GodataRest\Table\Common\Unit'));
+                    return $ctr;
+                },
                 'GodataRest\Controller\Article\ArticleList' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
                     $ctr = new \GodataRest\Controller\Article\ArticleListController();

@@ -1,17 +1,11 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace GodataRest\Input\Article;
 
 use Zend\InputFilter\InputFilter;
 
 /**
- * Description of StockInFilter
+ * Description of ArticleNewFilter
  *
  * @author allapow
  * @todo because we use filter NumberFormat ...dynamic local is recommendet
@@ -23,19 +17,19 @@ class ArticleNewFilter extends InputFilter
      *
      * @var array
      */
-    private $articleMapping;
+    protected $articleMapping;
     
     /**
      *
      * @var \GodataRest\Validator\Article\ExistArticleType
      */
-    private $existArticleTypeValidator;
+    protected $existArticleTypeValidator;
     
     /**
      *
      * @var \GodataRest\Validator\Article\ExistArticleGroup
      */
-    private $existArticleGroupValidator;
+    protected $existArticleGroupValidator;
 
     public function init()
     {

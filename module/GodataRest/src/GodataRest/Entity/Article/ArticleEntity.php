@@ -36,7 +36,8 @@ class ArticleEntity extends \GodataRest\Entity\AbstractEntity
         'unit' => 'unit',
         'status' => 'status',
         'defaultStoreId' => 'default_store_id',
-        'defaultStorePlace' => 'default_store_place'
+        'defaultStorePlace' => 'default_store_place',
+        'priceIndependent' => 'price_independent'
     ];
     
     protected $escapekeys = [
@@ -48,12 +49,13 @@ class ArticleEntity extends \GodataRest\Entity\AbstractEntity
 
     public function save(\GodataRest\Table\Article\ArticleTable $articleTable)
     {
-        $this->storage['date_create'] = time();
+        $this->storage[$this->mapping['dateCreate']] = time();
         return $articleTable->createArticle($this->storage);
     }
 
     public function update(\GodataRest\Table\Article\ArticleTable $articleTable)
     {
+        $this->storage[$this->mapping['dateEdit']] = time();
         return $articleTable->updateArticle($this->storage['id'], $this->storage);
     }
 
