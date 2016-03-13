@@ -9,7 +9,7 @@
 namespace GodataRest\Controller;
 
 /**
- * Description of AbstractGodataController
+ * All controller extends AbstractGodataController
  *
  * @author allapow
  */
@@ -21,6 +21,18 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
      * @var \Zend\Log\Logger
      */
     protected $logger;
+    
+    /**
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $userContainer;
+    
+    /**
+     *
+     * @var \GodataRest\Entity\Common\UserEntity
+     */
+    protected $user;
     
     /**
      * It is recommended to use the response array. Predefined with the keys 'messages', 'data' and 'result'.
@@ -105,7 +117,16 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
 //        $request = $this->getRequest();
 //        $method = strtolower($request->getMethod());
 //        $this->getLogger()->debug('onDispatch Method: ' . $method);
+//        $this->getLogger()->debug('onDispatch class: ' . get_class($this));
         return parent::onDispatch($e);
+    }
+    
+    public function dispatch(\Zend\Stdlib\RequestInterface $request, \Zend\Stdlib\ResponseInterface $response = null)
+    {
+        $this->userContainer = new \Zend\Session\Container('user');
+//        $this->user = $this->userContainer->entity;
+//        $this->getLogger()->debug('dispatch class: ' . get_class($this));
+        return parent::dispatch($request, $response);
     }
 
     /**

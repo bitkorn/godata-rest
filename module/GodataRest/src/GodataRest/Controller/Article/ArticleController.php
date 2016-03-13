@@ -4,6 +4,7 @@ namespace GodataRest\Controller\Article;
 
 use Zend\View\Model\JsonModel;
 use Zend\Http\PhpEnvironment\Response;
+use GodataRest\Entity\AbstractEntity;
 
 /**
  * Description of Article
@@ -45,6 +46,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->flipMapping();
             $articleEntity->exchangeArray($articleData);
+//            $articleEntity->crudAllowed(AbstractEntity::CRUD_READ, $this->user->getUserGroups());
             $articleEntity->escapeForOutput();
             $this->responseArr['data'] = $articleEntity->getArrayCopy();
 //            $this->getLogger()->debug('article ID: ' . $articleEntity->id);
@@ -64,6 +66,18 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function getList()
     {
+        $this->getLogger()->debug('Article getList');
+//        $this->userContainer = new \Zend\Session\Container('user');
+        if(empty($this->userContainer->entity)) {
+            $this->getLogger()->debug('is empty');
+        }
+        $this->user = $this->userContainer->entity;
+        $this->getLogger()->debug('$this->userContainer->entity: ' . print_r($this->userContainer->entity, true));
+        $this->getLogger()->debug('$this->user: ' . print_r($this->user, true));
+        
+            
+            
+            
         $this->responseArr['size'] = (int) $this->params()->fromQuery('size', 0);
         $this->responseArr['page'] = (int) $this->params()->fromQuery('page', 1);
         $digitsValidator = new \Zend\Validator\Digits();

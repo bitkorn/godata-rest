@@ -52,7 +52,8 @@ class JoinArticleEntity extends \GodataRest\Entity\AbstractEntity
         }
         foreach ($data as $key => $value) {
             if (isset($this->mappingArticle[$key])) {
-                $this->storage[self::ARTICLE_DATA_KEY][$this->mappingArticle[$key]] = $this->$key = $value;
+//                $this->storage[self::ARTICLE_DATA_KEY][$this->mappingArticle[$key]] = $this->$key = $value;
+                $this->storage[self::ARTICLE_DATA_KEY][$this->mappingArticle[$key]] = $value;
             }
         }
     }

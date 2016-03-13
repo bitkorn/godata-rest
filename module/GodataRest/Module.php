@@ -65,8 +65,9 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
         return array(
             'factories' => array(
                 'GodataRest\Controller\Common\Login' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
-//                    $sl = $cm->getServiceLocator();
+                    $sl = $cm->getServiceLocator();
                     $ctr = new \GodataRest\Controller\Common\LoginController();
+                    $ctr->setUserTable($sl->get('GodataRest\Table\Common\User\User'));
                     return $ctr;
                 },
                 'GodataRest\Controller\Article\Article' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
@@ -171,6 +172,18 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                 },
                 'GodataRest\Table\Common\Unit' => function(\Zend\ServiceManager\ServiceManager $sm) {
                     $table = new \GodataRest\Table\Common\UnitTable();
+                    $table->setDbAdapter($sm->get('dbGodatas'));
+                    $table->setLogger($sm->get('logger'));
+                    return $table;
+                },
+                'GodataRest\Table\Common\User\User' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $table = new \GodataRest\Table\Common\User\UserTable();
+                    $table->setDbAdapter($sm->get('dbGodatas'));
+                    $table->setLogger($sm->get('logger'));
+                    return $table;
+                },
+                'GodataRest\Table\Common\User\UserGroup' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $table = new \GodataRest\Table\Common\User\UserGroupTable();
                     $table->setDbAdapter($sm->get('dbGodatas'));
                     $table->setLogger($sm->get('logger'));
                     return $table;
