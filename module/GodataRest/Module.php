@@ -50,9 +50,18 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
             $strategy->attach($view->getEventManager());
         }
         );
-
-//        header('Access-Control-Allow-Origin: http://localhost:8383'); // AngularJS App
-        header('Access-Control-Allow-Origin: *');
+        /**
+         * Access-Control-Allow-Origin must be dynamic
+         * because requests with credentials need the right URL:
+         * https://developer.mozilla.org/de/docs/Web/HTTP/Access_control_CORS#Requests_with_credentials
+         */
+        if(!isset($_SERVER['HTTP_REFERER'])) {
+            throw new \RuntimeException('call without HTTP_REFERER not possible');
+        }
+        $referer = $_SERVER['HTTP_REFERER'];
+        $slashPos = strpos($referer, '/', 7);
+        $origin = substr($referer, 0, strpos($_SERVER['HTTP_REFERER'], '/', 7));
+        header("Access-Control-Allow-Origin: $origin");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         header('Access-Control-Allow-Credentials: true');
         header('Access-Control-Max-Age: 86400');

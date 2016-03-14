@@ -89,10 +89,14 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
          *  Allow from any origin
          */
         if (isset($_SERVER['HTTP_ORIGIN'])) {
+            /**
+             * aus der Module.php kann es nicht raus
+             * ...also hier
+             */
 //            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
-            header("Access-Control-Allow-Origin: *"); // da kann das aus der Module.php wohl raus
-            header('Access-Control-Allow-Credentials: true');
-            header('Access-Control-Max-Age: 86400');    // cache for 1 day
+//            header("Access-Control-Allow-Origin: http://godatapub.local"); // {$_SERVER['HTTP_REFERER']}
+//            header('Access-Control-Allow-Credentials: true');
+//            header('Access-Control-Max-Age: 86400');    // cache for 1 day
         }
 
         // Access-Control headers are received during OPTIONS requests
@@ -123,7 +127,7 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
     
     public function dispatch(\Zend\Stdlib\RequestInterface $request, \Zend\Stdlib\ResponseInterface $response = null)
     {
-        $this->userContainer = new \Zend\Session\Container('user');
+//        $this->userContainer = new \Zend\Session\Container('user');
 //        $this->user = $this->userContainer->entity;
 //        $this->getLogger()->debug('dispatch class: ' . get_class($this));
         return parent::dispatch($request, $response);

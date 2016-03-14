@@ -36,11 +36,13 @@ class LoginController extends \GodataRest\Controller\AbstractGodataController
             if($userId > 0) {
                 $userData = $this->userTable->getUserById($userId);
                 $userEntity->exchangeArray($userData);
-                $this->userContainer->entity = $userEntity;
-                $sessionId = $this->userContainer->getManager()->getId();
-                $this->responseArr['data'] = $sessionId;
+                $userContainer = new \Zend\Session\Container('user');
+                $userContainer->entity = $userEntity;
+                $userContainer->getManager()->regenerateId();
+//                $sessionId = $this->userContainer->getManager()->getId();
+//                $this->responseArr['data'] = $sessionId; // sendet der Server als Cookie: PHPSESSID
                 $this->responseArr['result'] = 1;
-                $this->getLogger()->debug('$userContainer->entity: ' . print_r($this->userContainer->entity, true));
+//                $this->getLogger()->debug('$userContainer->entity: ' . print_r($this->userContainer->entity, true));
 //                $this->getLogger()->debug('$this->user: ' . print_r($this->user, true));
             } else {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);

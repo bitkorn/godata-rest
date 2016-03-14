@@ -39,6 +39,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function get($id)
     {
+//        $this->getLogger()->debug('sessionid get: ' . $this->params()->fromQuery('sessionid', 'empty sessionid'));
 //        $this->getLogger()->debug('Article GET ID: ' . $id);
         $articleData = $this->articleTable->getArticle(filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]));
 //        $this->getLogger()->debug(print_r($articleData, true));
@@ -66,16 +67,11 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function getList()
     {
-        $this->getLogger()->debug('Article getList');
-//        $this->userContainer = new \Zend\Session\Container('user');
-        if(empty($this->userContainer->entity)) {
-            $this->getLogger()->debug('is empty');
+        $userContainer = new \Zend\Session\Container('user');
+        $this->getLogger()->debug('session_id getList: ' . session_id());
+        if($userContainer->entity) {
+            $this->getLogger()->debug('user in session: ' . print_r($this->userContainer->entity, true));
         }
-        $this->user = $this->userContainer->entity;
-        $this->getLogger()->debug('$this->userContainer->entity: ' . print_r($this->userContainer->entity, true));
-        $this->getLogger()->debug('$this->user: ' . print_r($this->user, true));
-        
-            
             
             
         $this->responseArr['size'] = (int) $this->params()->fromQuery('size', 0);
