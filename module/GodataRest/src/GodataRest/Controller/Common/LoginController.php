@@ -24,6 +24,11 @@ class LoginController extends \GodataRest\Controller\AbstractGodataController
      */
     private $userTable;
 
+    /**
+     * ONLY to test login session
+     * @param int $id
+     * @return JsonModel
+     */
     public function get($id)
     {
         $this->getLogger()->debug('id: ' . $id);
