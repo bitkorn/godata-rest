@@ -13,6 +13,19 @@ return array(
                     ),
                 ),
             ),
+            'godatarest_testlogin' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/testlogin[/:id]',
+                    'constraints' => array(
+                        'id' => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'GodataRest\Controller\Common',
+                        'controller' => 'Login',
+                    ),
+                ),
+            ),
             /*
              * Article
              */
