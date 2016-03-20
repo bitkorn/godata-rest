@@ -65,8 +65,10 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
 //        header("Access-Control-Allow-Origin: $origin");
         header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
-        header('Access-Control-Allow-Credentials: true');
+//        header('Access-Control-Allow-Credentials: true');
         header('Access-Control-Max-Age: 86400');
+        $config = $serviceManager->get('config');
+        header("Access-Control-Allow-Headers: " . implode(',', $config['access_control_allow_headers']));
 //        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); // not set
 //        header("Access-Control-Allow-Headers: X-PINGOTHER");
     }
@@ -75,6 +77,10 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
     {
         return array(
             'factories' => array(
+                'GodataRest\Controller\Common\Authorization' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
+                    $ctr = new \GodataRest\Controller\Common\AuthorizationController();
+                    return $ctr;
+                },
                 'GodataRest\Controller\Article\Article' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
                     $ctr = new \GodataRest\Controller\Article\ArticleController();
@@ -204,6 +210,12 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
                 },
                 'GodataRest\Tablex\Article\ArticleList' => function(\Zend\ServiceManager\ServiceManager $sm) {
                     $table = new \GodataRest\Tablex\Article\ArticleListTablex();
+                    $table->setDbAdapter($sm->get('dbGodatas'));
+                    $table->setLogger($sm->get('logger'));
+                    return $table;
+                },
+                'GodataRest\Tablex\Common\Crud' => function(\Zend\ServiceManager\ServiceManager $sm) {
+                    $table = new \GodataRest\Tablex\Common\CrudTablex();
                     $table->setDbAdapter($sm->get('dbGodatas'));
                     $table->setLogger($sm->get('logger'));
                     return $table;

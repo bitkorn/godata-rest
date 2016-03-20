@@ -3,6 +3,16 @@
 return array(
     'router' => array(
         'routes' => array(
+            'godatarest_authorization' => array(
+                'type' => 'literal',
+                'options' => array(
+                    'route' => '/auth',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'GodataRest\Controller\Common',
+                        'controller' => 'Authorization',
+                    ),
+                ),
+            ),
             /*
              * Article
              */
@@ -96,7 +106,7 @@ return array(
         'factories' => array(
         ),
         'invokables' => array(
-            // Filter
+        // Filter
 //            'GodataRest\Input\Stock\StockIn' => 'GodataRest\Input\Stock\StockInFilter',
         ),
     ),
@@ -109,5 +119,9 @@ return array(
         'invokables' => array(
 //            'ExistArticleIdValidator' => 'GodataRest\Validator\Article\ExistArticleId'
         )
-    )
+    ),
+    'access_control_allow_headers' => [
+        'accept', 'accept-encoding', 'accept-language', 'authorization', 'cache-control', 'connection', 'host', 'origin', 'pragma',
+        'referer', 'user-agent', 'content-encoding', 'content-length', 'content-type', 'date', 'keep-alive'
+    ]
 );

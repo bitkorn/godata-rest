@@ -45,7 +45,7 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
     const CRUD_UPDATE = 3;
     const CRUD_DELETE = 4;
 
-    /**
+        /**
      * Flip if data comes from DB
      */
     public function flipMapping()
@@ -64,15 +64,22 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
         foreach ($storageKeys as $storageKey) {
             $this->storage[$storageKey] = '';
         }
+        if(!is_array($data)) {
+            return false;
+        }
         foreach ($data as $key => $value) {
             if (isset($this->mapping[$key])) {
 //                $this->storage[$this->mapping[$key]] = $this->$key = $value;
-                $this->storage[$this->mapping[$key]] = $value;
+                $this->storage[$this->mapping[$key]] = $this->$key = $value;
             } elseif ($key == 'crud_groups') {
                 // only if data comes from database
                 $this->crudGroups = explode(',', $value);
             }
         }
+        if(empty($this->storage)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -125,23 +132,27 @@ class AbstractEntity extends \Zend\Stdlib\ArrayObject
      * 
      * @param int $crudAction
      * @param array $userGroups
+     * @param array $crudGroups Only needed for CRUD Action CREATE. For other actions there must be $this->crudGroups present.
      * @return boolean
      * @throws Exception
      */
-    public function crudAllowed($crudAction, array $userGroups)
+    public function crudAllowed($crudAction, array $userGroups, array $crudGroups = null)
     {
+        if($crudGroups) {
+            $this->crudGroups = $crudGroups;
+        }
         if (empty($this->crudGroups) || count($this->crudGroups) != 4) {
             throw new Exception('The entity has no valid CRUD groups: ' . get_class($this));
         }
         switch ($crudAction) {
             case self::CRUD_CREATE:
-                return in_array($this->crudGroups[self::CRUD_CREATE], $userGroups);
+                return in_array($this->crudGroups[self::CRUD_CREATE - 1], $userGroups);
             case self::CRUD_READ:
-                return in_array($this->crudGroups[self::CRUD_READ], $userGroups);
+                return in_array($this->crudGroups[self::CRUD_READ - 1], $userGroups);
             case self::CRUD_UPDATE:
-                return in_array($this->crudGroups[self::CRUD_UPDATE], $userGroups);
+                return in_array($this->crudGroups[self::CRUD_UPDATE - 1], $userGroups);
             case self::CRUD_DELETE:
-                return in_array($this->crudGroups[self::CRUD_DELETE], $userGroups);
+                return in_array($this->crudGroups[self::CRUD_DELETE - 1], $userGroups);
         }
     }
 

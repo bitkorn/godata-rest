@@ -41,7 +41,7 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
      */
     public function getArticle($id)
     {
-        if(is_nan($id) || $id < 0) { // can be 0
+        if (is_nan($id) || $id < 0) { // can be 0
             return [];
         }
         $select = $this->sql->select();
@@ -140,7 +140,7 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
         $delete = $this->sql->delete();
         $delete->where(['id' => $id]);
         $result = $this->deleteWith($delete);
-        if(is_int($result)) {
+        if (is_int($result)) {
             return $result;
         }
         return 0;
@@ -166,7 +166,8 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
         return 0;
     }
 
-    public function existArticleId($id) {
+    public function existArticleId($id)
+    {
         $select = $this->sql->select();
         $select->columns([new \Zend\Db\Sql\Expression('COUNT(id) AS count_id')]);
         $select->where(['id' => $id]);
@@ -179,4 +180,20 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
         }
         return false;
     }
+
+    public function getCrudArr($id)
+    {
+        if (is_nan($id) || $id < 0) { // can be 0
+            return [];
+        }
+        $select = $this->sql->select();
+        $select->where(['id' => $id]);
+        $result = $this->selectWith($select);
+        if (empty($result) || $result->count() != 1) {
+            return [];
+        }
+        $resultArray = $result->toArray();
+        return explode(',', $resultArray[0]['crud_groups']);
+    }
+
 }

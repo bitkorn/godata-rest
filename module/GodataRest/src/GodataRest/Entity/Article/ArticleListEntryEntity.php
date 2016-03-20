@@ -37,5 +37,4 @@ class ArticleListEntryEntity extends JoinArticleEntity
     {
         return $articleListTable->updateArticleListPart($this->storage['id'], $this->getArrayCopyPure());
     }
-
 }

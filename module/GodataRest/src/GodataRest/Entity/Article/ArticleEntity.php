@@ -59,4 +59,14 @@ class ArticleEntity extends \GodataRest\Entity\AbstractEntity
         return $articleTable->updateArticle($this->storage['id'], $this->storage);
     }
 
+    public function delete(\GodataRest\Table\Article\ArticleTable $articleTable)
+    {
+        return $articleTable->deleteArticle($this->storage['id']);
+    }
+
+    public function loadEntity($id, \GodataRest\Table\Article\ArticleTable $table)
+    {
+        return $this->exchangeArray($table->getArticle($id));
+    }
+
 }

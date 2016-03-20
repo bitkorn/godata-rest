@@ -39,17 +39,20 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function get($id)
     {
+        $this->checkAccess();
         $articleData = $this->articleTable->getArticle(filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]));
 //        $this->getLogger()->debug(print_r($articleData, true));
         if (!empty($articleData)) {
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->flipMapping();
             $articleEntity->exchangeArray($articleData);
-//            $articleEntity->crudAllowed(AbstractEntity::CRUD_READ, $this->user->getUserGroups());
-            $articleEntity->escapeForOutput();
-            $this->responseArr['data'] = $articleEntity->getArrayCopy();
-//            $this->getLogger()->debug('article ID: ' . $articleEntity->id);
-            $this->responseArr['articleListCount'] = $this->articleListTable->articleListExist($articleEntity->id);
+            if ($articleEntity->crudAllowed(AbstractEntity::CRUD_READ, $this->userGroups, $this->articleTable->getCrudArr($articleEntity->id))) {
+                $articleEntity->escapeForOutput();
+                $this->responseArr['data'] = $articleEntity->getArrayCopy();
+                $this->responseArr['articleListCount'] = $this->articleListTable->articleListExist($articleEntity->id);
+            } else {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
+            }
         } else {
             $this->responseArr['messages'][] = 'no article available';
         }
@@ -66,7 +69,6 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
     public function getList()
     {
         $this->checkAccess();
-        $this->getLogger()->debug('Authorization: ' . ($this->isUser ? 'access':'forbidden'));
         $this->responseArr['size'] = (int) $this->params()->fromQuery('size', 0);
         $this->responseArr['page'] = (int) $this->params()->fromQuery('page', 1);
         $digitsValidator = new \Zend\Validator\Digits();
@@ -87,9 +89,13 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
                 $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
                 $articleEntity->flipMapping();
                 $articleEntity->exchangeArray($articleData);
-                $articleEntity->escapeForOutput();
 //                $this->getLogger()->debug('storage: ' . print_r($articleEntity->getArrayCopy(), true));
-                $this->responseArr['data'][] = $articleEntity->getArrayCopy();
+                if ($articleEntity->crudAllowed(AbstractEntity::CRUD_READ, $this->userGroups)) {
+                    $articleEntity->escapeForOutput();
+                    $this->responseArr['data'][] = $articleEntity->getArrayCopy();
+                } else {
+                    $this->responseArr['count'] -= 1;
+                }
             }
         } else {
             $this->responseArr['count'] = 0;
@@ -108,16 +114,22 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function create($data)
     {
+        $this->checkAccess();
         if ($data && is_array($data)) {
             $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
             $articleEntity->exchangeArray($data);
 //            $this->getLogger()->debug('$data: ' . print_r($data, true));
             if ($articleEntity->isValid($this->articleNewFilter)) {
-                $this->responseArr['id'] = $articleEntity->save($this->articleTable);
-                if ($this->responseArr['id'] > 0) {
-                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+                if ($articleEntity->crudAllowed(AbstractEntity::CRUD_CREATE, $this->userGroups,
+                                $this->getCrudTablex()->getDefaultCrudGroups('article'))) {
+                    $this->responseArr['id'] = $articleEntity->save($this->articleTable);
+                    if ($this->responseArr['id'] > 0) {
+                        $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+                    } else {
+                        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                    }
                 } else {
-                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
                 }
             } else {
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
@@ -136,18 +148,29 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function delete($id)
     {
+        $this->checkAccess();
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if (!$idFiltered) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
         $this->responseArr = ['id' => $idFiltered];
-        $this->responseArr['result'] = $this->articleTable->deleteArticle($idFiltered);
-        if ($this->responseArr['result'] > 0) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
-        } else {
+        $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
+        if (!$articleEntity->loadEntity($idFiltered, $this->articleTable)) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+        } else {
+            if ($articleEntity->crudAllowed(AbstractEntity::CRUD_DELETE, $this->userGroups)) {
+                $this->responseArr['result'] = $articleEntity->delete($this->articleTable);
+                if ($this->responseArr['result'] > 0) {
+                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+                } else {
+                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+                }
+            } else {
+                $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
+            }
         }
+
         return new JsonModel($this->responseArr);
     }
 
@@ -160,6 +183,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
      */
     public function update($id, $data)
     {
+        $this->checkAccess();
         $responseArr = ['id' => $id];
         if ($data && is_array($data)) {
 //            $this->getLogger()->debug('drin');

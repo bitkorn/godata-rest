@@ -27,6 +27,12 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
      * @var \GodataRest\Table\Common\User\UserTable
      */
     protected $userTable;
+
+    /**
+     *
+     * @var \GodataRest\Tablex\Common\CrudTablex
+     */
+    protected $crudTablex;
     
     /**
      *
@@ -35,6 +41,7 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
     protected $userEntity;
     
     protected $isUser = false;
+    protected $userGroups = [];
     
     /**
      * It is recommended to use the response array. Predefined with the keys 'messages', 'data' and 'result'.
@@ -105,7 +112,7 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
             }
 
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])) {
-                header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
+//                header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
 //                $this->getLogger()->debug('HTTP_ACCESS_CONTROL_REQUEST_HEADERS');
             }
 
@@ -136,13 +143,14 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
             $this->userEntity->exchangeArray(['login' => $decoded[0], 'passwd' => $decoded[1]]);
 //            $userEntity->save($this->getUserTable()); // create user on the fly
             $userId = $this->userEntity->canLogin($this->getUserTable());
-            $this->getLogger()->debug('check');
+//            $this->getLogger()->debug('check');
             if ($userId > 0) {
                 $userData = $this->getUserTable()->getUserById($userId);
                 $this->userEntity->exchangeArray($userData);
                 $this->responseArr['result'] = 1;
                 $this->isUser = true;
-//                $this->getLogger()->debug('$this->user: ' . print_r($this->user, true));
+                $this->userGroups = $this->userEntity->getUserGroups();
+//                $this->getLogger()->debug('$this->user: ' . print_r($this->userEntity, true));
             } else {
                 $this->userEntity = null;
                 $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
@@ -176,4 +184,17 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
         }
         return $this->userTable;
     }
+    
+    /**
+     * 
+     * @return \GodataRest\Tablex\Common\CrudTablex
+     */
+    protected function getCrudTablex()
+    {
+        if(empty($this->crudTablex)) {
+            $this->crudTablex = $this->serviceLocator->get('GodataRest\Tablex\Common\Crud');
+        }
+        return $this->crudTablex;
+    }
+
 }
