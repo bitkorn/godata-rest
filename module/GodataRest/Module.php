@@ -56,12 +56,14 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
          * https://developer.mozilla.org/de/docs/Web/HTTP/Access_control_CORS#Requests_with_credentials
          */
         if(!isset($_SERVER['HTTP_REFERER'])) {
-            throw new \RuntimeException('call without HTTP_REFERER not possible');
+//            throw new \RuntimeException('call without HTTP_REFERER not possible');
         }
-        $referer = $_SERVER['HTTP_REFERER'];
-        $slashPos = strpos($referer, '/', 7);
-        $origin = substr($referer, 0, strpos($_SERVER['HTTP_REFERER'], '/', 7));
-        header("Access-Control-Allow-Origin: $origin");
+//        $referer = $_SERVER['HTTP_REFERER'];
+//        $slashPos = strpos($referer, '/', 7);
+        
+//        $origin = substr($referer, 0, strpos($_SERVER['HTTP_REFERER'], '/', 7));
+//        header("Access-Control-Allow-Origin: $origin");
+        header("Access-Control-Allow-Origin: *");
         header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
         header('Access-Control-Allow-Credentials: true');
         header('Access-Control-Max-Age: 86400');
@@ -73,12 +75,6 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
     {
         return array(
             'factories' => array(
-                'GodataRest\Controller\Common\Login' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
-                    $sl = $cm->getServiceLocator();
-                    $ctr = new \GodataRest\Controller\Common\LoginController();
-                    $ctr->setUserTable($sl->get('GodataRest\Table\Common\User\User'));
-                    return $ctr;
-                },
                 'GodataRest\Controller\Article\Article' => function(\Zend\Mvc\Controller\ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
                     $ctr = new \GodataRest\Controller\Article\ArticleController();

@@ -3,29 +3,6 @@
 return array(
     'router' => array(
         'routes' => array(
-            'godatarest_login' => array(
-                'type' => 'literal',
-                'options' => array(
-                    'route' => '/login', // only getList()
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'GodataRest\Controller\Common',
-                        'controller' => 'Login',
-                    ),
-                ),
-            ),
-            'godatarest_testlogin' => array(
-                'type' => 'Segment',
-                'options' => array(
-                    'route' => '/testlogin[/:id]',
-                    'constraints' => array(
-                        'id' => '[0-9]+',
-                    ),
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'GodataRest\Controller\Common',
-                        'controller' => 'Login',
-                    ),
-                ),
-            ),
             /*
              * Article
              */

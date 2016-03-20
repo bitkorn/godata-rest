@@ -34,17 +34,4 @@ return array(
             ),
         ),
     ),
-    'session' => array( // in Module.php wird das hier abgefragt
-        'config' => array(
-            'class' => 'Zend\Session\Config\SessionConfig',
-            'options' => array(
-                'name' => 'godata',
-            ),
-        ),
-        'storage' => 'Zend\Session\Storage\SessionArrayStorage',
-        'validators' => array(
-//            'Zend\Session\Validator\RemoteAddr',
-//            'Zend\Session\Validator\HttpUserAgent',
-        ),
-    ),
 );
