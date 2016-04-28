@@ -71,7 +71,8 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
             }
             if (!empty($desc)) {
 //                $select->where(new \Zend\Db\Sql\Predicate\Like('desc_short', "%$search%"));
-                $select->where->like('desc_short', "%$desc%")->or->like('desc_long', "%$desc%");
+//                $select->where->like('desc_short', "%$desc%")->or->like('desc_long', "%$desc%"); // ein OR in der Kette ist komisch
+                $select->where->like('desc_short', "%$desc%");
             }
             if (!empty($articleType)) {
                 $select->where(['article_type' => $articleType]);
@@ -82,6 +83,8 @@ class ArticleTable extends AbstractTableGateway implements AdapterAwareInterface
                 $select->limit($size);
             }
             try {
+                $this->sql->prepareStatementForSqlObject($select);
+//                $this->logger->debug('ArticleListQuery: ' . $select->getSqlString());
                 $result = $this->selectWith($select);
                 if (!empty($result) && $result instanceof ResultSetInterface && $result->count() > 0) {
                     $returnArray['data'] = $result->toArray();
