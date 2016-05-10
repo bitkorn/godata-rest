@@ -38,6 +38,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      */
     public function get($id)
     {
+        $this->checkAccess();
         // Tests
 //        $stockInFilter = $this->getStockInFilter();
 //        $stockInFilter->setData(['article_id' => 14, 'store_id' => 2, 'store_place' => '36gdbf', 'charge' => 'hsg6354', 'quantity' => '22.23', 'unit' => 'sf']);
@@ -80,6 +81,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      */
     public function getList()
     {
+        $this->checkAccess();
         $this->responseArr['size'] = (int) $this->params()->fromQuery('size', 0);
         $this->responseArr['page'] = (int) $this->params()->fromQuery('page', 1);
         $articleNo = (int) $this->params()->fromQuery('articleNo', 0);
@@ -133,6 +135,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      */
     public function create($data)
     {
+        $this->checkAccess();
         if ($data && is_array($data)) {
             $stockEntity = new \GodataRest\Entity\Stock\StockInEntity();
             $data['entryTime'] = time(); // mit Hand eingeben lassen?!?!???
@@ -162,6 +165,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      */
     public function delete($id)
     {
+        $this->checkAccess();
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if (!$idFiltered) {
             $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
@@ -183,6 +187,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
      */
     public function update($id, $data)
     {
+        $this->checkAccess();
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         $this->getLogger()->debug('$idFiltered: ' . $idFiltered);
         if (!$idFiltered) {
