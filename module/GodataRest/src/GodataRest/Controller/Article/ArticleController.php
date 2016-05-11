@@ -51,7 +51,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
                 $this->responseArr['data'] = $articleEntity->getArrayCopy();
                 $this->responseArr['articleListCount'] = $this->articleListTable->articleListExist($articleEntity->id);
             } else {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_401);
             }
         } else {
             $this->responseArr['messages'][] = 'no article available';
@@ -124,15 +124,15 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
                                 $this->getCrudTablex()->getDefaultCrudGroups('article'))) {
                     $this->responseArr['id'] = $articleEntity->save($this->articleTable);
                     if ($this->responseArr['id'] > 0) {
-                        $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+                        $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_201);
                     } else {
-                        $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                        $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
                     }
                 } else {
-                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
+                    $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_401);
                 }
             } else {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
                 $this->responseArr['messages'] = $articleEntity->getValidateMessages();
                 $this->getLogger()->debug('invalid: ' . print_r($articleEntity->getValidateMessages(), true));
             }
@@ -151,23 +151,23 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
         $this->checkAccess();
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if (!$idFiltered) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
         $this->responseArr = ['id' => $idFiltered];
         $articleEntity = new \GodataRest\Entity\Article\ArticleEntity();
         if (!$articleEntity->loadEntity($idFiltered, $this->articleTable)) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
         } else {
             if ($articleEntity->crudAllowed(AbstractEntity::CRUD_DELETE, $this->userGroups)) {
                 $this->responseArr['result'] = $articleEntity->delete($this->articleTable);
                 if ($this->responseArr['result'] > 0) {
-                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+                    $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_200);
                 } else {
-                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_500);
+                    $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_500);
                 }
             } else {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_401);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_401);
             }
         }
 
@@ -191,9 +191,9 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
             $articleEntity->exchangeArray($data);
             $responseArr['result'] = $articleEntity->update($this->articleTable);
             if ($responseArr['result'] > 0) {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_200);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_200);
             } else {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_202);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_202);
             }
         }
         return new JsonModel($responseArr);

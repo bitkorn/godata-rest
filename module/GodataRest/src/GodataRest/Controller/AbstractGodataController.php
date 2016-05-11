@@ -33,16 +33,15 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
      * @var \GodataRest\Tablex\Common\CrudTablex
      */
     protected $crudTablex;
-    
+
     /**
      *
      * @var \GodataRest\Entity\Common\UserEntity
      */
     protected $userEntity;
-    
     protected $isUser = false;
     protected $userGroups = [];
-    
+
     /**
      * It is recommended to use the response array. Predefined with the keys 'messages', 'data' and 'result'.
      * messages: array with messages. Messages with an integer key are global and with string key they belongs to a datafield.
@@ -128,37 +127,46 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
 //        $this->getLogger()->debug('onDispatch class: ' . get_class($this));
         return parent::onDispatch($e);
     }
-    
+
     public function dispatch(\Zend\Stdlib\RequestInterface $request, \Zend\Stdlib\ResponseInterface $response = null)
     {
         return parent::dispatch($request, $response);
     }
-    
-    protected function checkAccess() {
-        $headers = $this->getRequest()->getHeaders();
-        $authorization = $headers->get('Authorization')->getFieldValue();
-        $decoded = explode(':', base64_decode(substr($authorization, 6)));
-        if (!empty($decoded[0]) && !empty($decoded[1])) {
-            $this->userEntity = new \GodataRest\Entity\Common\UserEntity();
-            $this->userEntity->exchangeArray(['login' => $decoded[0], 'passwd' => $decoded[1]]);
-//            $userEntity->save($this->getUserTable()); // create user on the fly
-            $userId = $this->userEntity->canLogin($this->getUserTable());
-//            $this->getLogger()->debug('check');
-            if ($userId > 0) {
-                $userData = $this->getUserTable()->getUserById($userId);
-                $this->userEntity->exchangeArray($userData);
-                $this->responseArr['result'] = 1;
-                $this->isUser = true;
-                $this->userGroups = $this->userEntity->getUserGroups();
-//                $this->getLogger()->debug('$this->user: ' . print_r($this->userEntity, true));
-            } else {
-                $this->userEntity = null;
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-                $this->responseArr['messages'][] = 'so net';
-            }
+
+    protected function checkAccess()
+    {
+//        $this->getLogger()->debug('all Headers: ' . print_r(apache_request_headers(), true));
+//        $headers = $this->getRequest()->getHeaders();
+//        $authorization = $headers->get('Authorization')->getFieldValue();
+        $headers = apache_request_headers();
+        if (!isset($headers['Authorization'])) {
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
+            exit(-1);
         } else {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
-            $this->responseArr['messages'][] = 'username and password can\'t be empty';
+            $authorization = $headers['Authorization'];
+            $decoded = explode(':', base64_decode(substr($authorization, 6)));
+            if (!empty($decoded[0]) && !empty($decoded[1])) {
+                $this->userEntity = new \GodataRest\Entity\Common\UserEntity();
+                $this->userEntity->exchangeArray(['login' => $decoded[0], 'passwd' => $decoded[1]]);
+//            $userEntity->save($this->getUserTable()); // create user on the fly
+                $userId = $this->userEntity->canLogin($this->getUserTable());
+//            $this->getLogger()->debug('check');
+                if ($userId > 0) {
+                    $userData = $this->getUserTable()->getUserById($userId);
+                    $this->userEntity->exchangeArray($userData);
+                    $this->responseArr['result'] = 1;
+                    $this->isUser = true;
+                    $this->userGroups = $this->userEntity->getUserGroups();
+//                $this->getLogger()->debug('$this->user: ' . print_r($this->userEntity, true));
+                } else {
+                    $this->userEntity = null;
+                    $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
+                    $this->responseArr['messages'][] = 'so net';
+                }
+            } else {
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
+                $this->responseArr['messages'][] = 'username and password can\'t be empty';
+            }
         }
     }
 
@@ -173,25 +181,26 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
         }
         return $this->logger;
     }
-    
+
     /**
      * 
      * @return \GodataRest\Table\Common\User\UserTable
      */
-    protected function getUserTable() {
-        if(empty($this->userTable)) {
+    protected function getUserTable()
+    {
+        if (empty($this->userTable)) {
             $this->userTable = $this->serviceLocator->get('GodataRest\Table\Common\User\User');
         }
         return $this->userTable;
     }
-    
+
     /**
      * 
      * @return \GodataRest\Tablex\Common\CrudTablex
      */
     protected function getCrudTablex()
     {
-        if(empty($this->crudTablex)) {
+        if (empty($this->crudTablex)) {
             $this->crudTablex = $this->serviceLocator->get('GodataRest\Tablex\Common\Crud');
         }
         return $this->crudTablex;

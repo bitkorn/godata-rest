@@ -62,12 +62,12 @@ class ArticleListController extends \GodataRest\Controller\AbstractGodataControl
             $articleListEntryEntity->exchangeArray($data);
             $this->responseArr['id'] = $articleListEntryEntity->save($this->articleListTable);
             if ($this->responseArr['id'] > 0) {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_201);
             } else {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
             }
         } else {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
         }
         return new JsonModel($this->responseArr);
     }
@@ -82,7 +82,7 @@ class ArticleListController extends \GodataRest\Controller\AbstractGodataControl
     {
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if(!$idFiltered) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
         $this->responseArr = ['id' => $idFiltered];

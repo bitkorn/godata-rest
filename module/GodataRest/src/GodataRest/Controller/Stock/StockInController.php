@@ -51,7 +51,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
 
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if (!$idFiltered) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
 //        $this->getLogger()->debug('$idFiltered: ' . $idFiltered);
@@ -143,12 +143,12 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
             if ($stockEntity->isValid($this->stockInFilter)) {
                 $this->responseArr['id'] = $stockEntity->save($this->stockInTable);
                 if ($this->responseArr['id'] > 0) {
-                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_201);
+                    $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_201);
                 } else {
-                    $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                    $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
                 }
             } else {
-                $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+                $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
                 $this->responseArr['messages'] = $stockEntity->getValidateMessages();
 //                $this->getLogger()->debug('invalid: ' . print_r($stockEntity->getValidateMessages(), true));
             }
@@ -168,7 +168,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
         $this->checkAccess();
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if (!$idFiltered) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
 //        $this->getLogger()->debug('delete: ' . $idFiltered);
@@ -191,7 +191,7 @@ class StockInController extends \GodataRest\Controller\AbstractGodataController
         $idFiltered = filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         $this->getLogger()->debug('$idFiltered: ' . $idFiltered);
         if (!$idFiltered) {
-            $this->getResponse()->setStatusCode(Response::STATUS_CODE_400);
+            $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
             $this->responseArr['messages'][] = 'id must be an integer';
         }
 
