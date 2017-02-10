@@ -1,3 +1,6 @@
+# to access $_SERVER["HTTP_AUTHORIZATION"]; // using super global
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
 RewriteEngine On
 # The following rule tells Apache that if the requested filename
 # exists, simply serve it.

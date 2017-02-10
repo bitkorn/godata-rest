@@ -138,12 +138,14 @@ class AbstractGodataController extends \Zend\Mvc\Controller\AbstractRestfulContr
 //        $this->getLogger()->debug('all Headers: ' . print_r(apache_request_headers(), true));
 //        $headers = $this->getRequest()->getHeaders();
 //        $authorization = $headers->get('Authorization')->getFieldValue();
-        $headers = apache_request_headers();
-        if (!isset($headers['Authorization'])) {
+        $authorization = filter_var($_SERVER["HTTP_AUTHORIZATION"]);
+//        $headers = apache_request_headers(); // nicht immer available (z.B. Server mit Plesk)
+//        if (!isset($headers['Authorization'])) {
+        if (!isset($authorization)) {
             $this->getResponse()->setStatusCode(\Zend\Http\PhpEnvironment\Response::STATUS_CODE_400);
             exit(-1);
         } else {
-            $authorization = $headers['Authorization'];
+//            $authorization = $headers['Authorization'];
             $decoded = explode(':', base64_decode(substr($authorization, 6)));
             if (!empty($decoded[0]) && !empty($decoded[1])) {
                 $this->userEntity = new \GodataRest\Entity\Common\UserEntity();

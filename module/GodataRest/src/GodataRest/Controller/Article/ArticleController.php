@@ -71,6 +71,7 @@ class ArticleController extends \GodataRest\Controller\AbstractGodataController
         $this->checkAccess();
         $this->responseArr['size'] = (int) $this->params()->fromQuery('size', 0);
         $this->responseArr['page'] = (int) $this->params()->fromQuery('page', 1);
+//        $this->getLogger()->debug(print_r($this->responseArr, true));
         $digitsValidator = new \Zend\Validator\Digits();
         $articleNo = trim($this->params()->fromQuery('articleNo', '')); // must be string ...perhaps somebody search for 007
         if (!empty($articleNo) && !$digitsValidator->isValid($articleNo)) {

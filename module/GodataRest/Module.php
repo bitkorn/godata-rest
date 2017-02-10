@@ -71,6 +71,9 @@ class Module implements AutoloaderProviderInterface, BootstrapListenerInterface,
         header("Access-Control-Allow-Headers: " . implode(',', $config['access_control_allow_headers']));
 //        header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}"); // not set
 //        header("Access-Control-Allow-Headers: X-PINGOTHER");
+        
+//        $logger = $serviceManager->get('logger');
+//        $logger->debug('all Headers: ' . print_r(apache_request_headers(), true)); // funzt aufm Server (STRATO) nicht
     }
 
     public function getControllerConfig()
